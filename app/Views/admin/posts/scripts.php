@@ -151,7 +151,7 @@ function savePost() {
   const formData = new FormData();
   formData.append('title', postTitleInput?.value ?? '');
   formData.append('content', postContentInput?.value ?? '');
-  formData.append('lang', postLanguageSelect?.value ?? '');
+  formData.append('lang_id', postLanguageSelect?.value ?? '');
   formData.append('seo_title', postSeoTitleInput?.value ?? '');
   formData.append('seo_desc', postSeoDescInput?.value ?? '');
   formData.append('seo_url', postSeoUrlInput?.value ?? '');
@@ -206,10 +206,10 @@ function fillPostForm(post) {
   if (postTitleInput) postTitleInput.value = post.title || '';
   if (postContentInput) postContentInput.value = post.content || '';
   if (postLanguageSelect) {
-    const targetValue = post.lang || '';
+    const targetValue = post.lang_id !== undefined && post.lang_id !== null ? String(post.lang_id) : '';
     const exists = Array.from(postLanguageSelect.options).some(option => option.value === targetValue);
     if (!exists && targetValue) {
-      const fallbackOption = new Option(targetValue, targetValue, true, true);
+      const fallbackOption = new Option(`Dil ${targetValue}`, targetValue, true, true);
       postLanguageSelect.add(fallbackOption);
     }
     postLanguageSelect.value = targetValue;

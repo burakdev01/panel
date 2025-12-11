@@ -59,6 +59,7 @@ setTimeout(function() {
 
 // Sortable Table - Drag & Drop
 const sortableTable = document.getElementById('sortable-table');
+const sortableEntity = sortableTable?.dataset?.entity ?? null;
 if (sortableTable) {
   new Sortable(sortableTable, {
     handle: '.drag-handle',
@@ -75,45 +76,59 @@ if (sortableTable) {
       console.log('Eski Sıra:', oldIndex);
       console.log('Yeni Sıra:', newIndex);
 
+      // Güncel sıralamayı çıkar
+      const orderedItems = Array.from(sortableTable.querySelectorAll('.sortable-row')).map((row, index) => ({
+        id: row.getAttribute('data-id'),
+        order: index + 1,
+      }));
+
       // AJAX ile sıralamayı kaydet
-      updateOrder(itemId, newIndex);
+      updateOrder(orderedItems, sortableEntity);
     }
   });
 }
 
 // Sıralama güncellemesi için AJAX fonksiyonu
-function updateOrder(itemId, newOrder) {
+function updateOrder(items, entity) {
+  if (!entity) {
+    console.warn('Sıralama için entity tanımlı değil, istek gönderilmiyor.');
+    return;
+  }
+  if (!Array.isArray(items) || !items.length) {
+    console.warn('Sıralama için gönderilecek öğe bulunamadı.');
+    return;
+  }
+
   // Şu an için sadece console'a yazdır
   // Route tanımlandığında aktif hale gelecek
-  console.log('Sıralama güncellendi:');
-  console.log('- ID:', itemId);
-  console.log('- Yeni Sıra:', newOrder);
+  console.log('Sıralama güncellendi, gönderilen veriler:');
+  console.table(items);
 
   // AJAX kullanmak istersen, önce route tanımla:
-  /*
+
   fetch('<?= base_url('admin/content/update-order') ?>', {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
       },
       body: JSON.stringify({
-          id: itemId,
-          order: newOrder
+        entity: entity,
+        items: items
       })
-  })
-  .then(response => response.json())
-  .then(data => {
+    })
+    .then(response => response.json())
+    .then(data => {
       if (data.success) {
-          console.log('✅ Sıralama veritabanına kaydedildi');
+        console.log('✅ Sıralama veritabanına kaydedildi');
       } else {
-          console.error('❌ Sıralama güncellenemedi:', data.message);
+        console.error('❌ Sıralama güncellenemedi:', data.message);
       }
-  })
-  .catch(error => {
+    })
+    .catch(error => {
       console.error('❌ AJAX Hatası:', error);
-  });
-  */
+    });
+
 }
 
 // Delete confirmation

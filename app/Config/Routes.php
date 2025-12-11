@@ -25,6 +25,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('posts/(:num)', 'Admin\Posts::show/$1');
     $routes->post('posts/(:num)', 'Admin\Posts::update/$1');
     $routes->delete('posts/(:num)', 'Admin\Posts::delete/$1');
+    $routes->post('content/update-order', 'Admin\ContentOrder::update');
 });
 
 $routes->get('admin', 'Admin\Auth::default');

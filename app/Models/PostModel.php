@@ -13,11 +13,12 @@ class PostModel extends Model
         'title',
         'content',
         'image',
-        'lang',
+        'lang_id',
         'seo_title',
         'seo_desc',
         'seo_url',
         'active',
+        'post_order',
     ];
 
     protected $useTimestamps = false;

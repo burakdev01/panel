@@ -26,9 +26,10 @@ class CreatePostsTable extends Migration
                 'constraint' => 255,
                 'null'       => true,
             ],
-            'lang' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
+            'lang_id' => [
+                'type'     => 'INT',
+                'unsigned' => true,
+                'null'     => true,
             ],
             'seo_title' => [
                 'type'       => 'VARCHAR',
@@ -50,6 +51,11 @@ class CreatePostsTable extends Migration
                 'type'       => 'TINYINT',
                 'constraint' => 1,
                 'default'    => 1,
+            ],
+            'post_order' => [
+                'type'       => 'INT',
+                'unsigned'   => true,
+                'default'    => 0,
             ],
         ]);
 

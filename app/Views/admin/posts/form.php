@@ -29,7 +29,7 @@
           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
           <?php if(!empty($languages)): ?>
           <?php foreach($languages as $language): ?>
-          <option value="<?= esc($language['name']) ?>"><?= esc($language['name']) ?></option>
+          <option value="<?= esc($language['id']) ?>"><?= esc($language['name']) ?></option>
           <?php endforeach; ?>
           <?php else: ?>
           <option value="">Dil bulunamadı</option>
@@ -47,6 +47,7 @@
           <span class="ml-3 text-sm font-medium text-gray-700">Aktif</span>
         </label>
       </div>
+
     </div>
   </div>
 

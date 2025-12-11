@@ -30,7 +30,7 @@ class CreateSlidersTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'lang_id' => [
+           'lang_id' => [
                 'type'     => 'INT',
                 'unsigned' => true,
             ],

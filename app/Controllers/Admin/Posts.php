@@ -76,6 +76,9 @@ class Posts extends BaseController
         }
 
         $payload = $this->buildPayload($imagePath);
+        if (!array_key_exists('post_order', $payload)) {
+            $payload['post_order'] = $this->getNextOrder();
+        }
 
         $id = $this->postModel->insert($payload);
         $post = $this->postModel->find($id);
@@ -172,11 +175,12 @@ class Posts extends BaseController
         $rules = [
             'title' => 'required|min_length[3]|max_length[255]',
             'content' => 'required|string',
-            'lang' => 'required|max_length[100]',
+            'lang_id' => 'required|is_not_unique[languages.id]',
             'seo_title' => 'permit_empty|max_length[255]',
             'seo_desc' => 'permit_empty|max_length[255]',
             'seo_url' => $seoUrlRule,
-            'active' => 'permit_empty|in_list[0,1]'
+            'active' => 'permit_empty|in_list[0,1]',
+            'post_order' => 'permit_empty|integer',
         ];
 
         $rules['image'] = 'if_exist|is_image[image]|ext_in[image,jpg,jpeg,png,webp]|max_size[image,2048]';
@@ -217,12 +221,17 @@ class Posts extends BaseController
         $payload = [
             'title' => $this->request->getPost('title'),
             'content' => $this->request->getPost('content'),
-            'lang' => $this->request->getPost('lang'),
+            'lang_id' => (int) $this->request->getPost('lang_id'),
             'seo_title' => $this->request->getPost('seo_title'),
             'seo_desc' => $this->request->getPost('seo_desc'),
             'seo_url' => $this->request->getPost('seo_url'),
             'active' => ($activeInput === '1' || $activeInput === 'on') ? 1 : 0,
         ];
+
+        $postOrderInput = $this->request->getPost('post_order');
+        if ($postOrderInput !== null && $postOrderInput !== '') {
+            $payload['post_order'] = (int) $postOrderInput;
+        }
 
         if ($removeImage) {
             $payload['image'] = null;
@@ -233,9 +242,24 @@ class Posts extends BaseController
         return $payload;
     }
 
+    private function getNextOrder(): int
+    {
+        $lastOrder = $this->postModel
+            ->select('post_order')
+            ->orderBy('post_order', 'DESC')
+            ->first();
+
+        return ($lastOrder['post_order'] ?? 0) + 1;
+    }
+
     private function getPosts(): array
     {
-        return $this->postModel->orderBy('id', 'DESC')->findAll();
+        return $this->postModel
+            ->select('posts.*, languages.name as language_name')
+            ->join('languages', 'languages.id = posts.lang_id', 'left')
+            ->orderBy('posts.post_order', 'ASC')
+            ->orderBy('posts.id', 'DESC')
+            ->findAll();
     }
 
     private function formatPost(?array $post): ?array
