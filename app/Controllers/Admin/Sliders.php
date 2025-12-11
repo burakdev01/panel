@@ -19,6 +19,33 @@ class Sliders extends BaseController
         $this->languageModel = new LanguageModel();
     }
 
+    public function createForm()
+    {
+        $data = [
+            'title' => 'Yeni Slider',
+            'pageTitle' => 'Yeni Slider Ekle',
+            'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
+        ];
+
+        return view('admin/template/header', $data)
+            . view('admin/sliders/create', $data)
+            . view('admin/template/footer');
+    }
+
+    public function editPage()
+    {
+        $data = [
+            'title' => 'Slider Düzenle',
+            'pageTitle' => 'Slider Düzenle',
+            'sliders' => $this->getSlidersWithLanguage(),
+            'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
+        ];
+
+        return view('admin/template/header', $data)
+            . view('admin/sliders/edit', $data)
+            . view('admin/template/footer');
+    }
+
     public function show(?int $id = null): ResponseInterface
     {
         if ($id === null) {
@@ -228,6 +255,15 @@ class Sliders extends BaseController
             ->select('sliders.*, languages.name as language_name')
             ->join('languages', 'languages.id = sliders.lang_id', 'left')
             ->find($id);
+    }
+
+    private function getSlidersWithLanguage(): array
+    {
+        return $this->sliderModel
+            ->select('sliders.*, languages.name as language_name')
+            ->join('languages', 'languages.id = sliders.lang_id', 'left')
+            ->orderBy('sliders.id', 'DESC')
+            ->findAll();
     }
 
     private function formatSlider(?array $slider): ?array

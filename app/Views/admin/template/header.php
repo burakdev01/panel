@@ -44,11 +44,22 @@
           <span class="font-medium">Ana Sayfa</span>
         </a>
 
-        <a href="<?= base_url('admin/slider') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
-          <i class="fas fa-image w-5"></i>
-          <span class="font-medium">Slider Yönetimi</span>
-        </a>
+        <div class="mb-1">
+          <button onclick="toggleDropdown('slayt')"
+            class="w-full flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-image w-5"></i>
+              <span class="font-medium">Slider Yönetimi</span>
+            </div>
+            <i class="fas fa-chevron-right text-xs transition-transform" id="slayt-icon"></i>
+          </button>
+          <div id="slayt-menu" class="hidden pl-12 mt-1 space-y-1">
+            <a href="<?= base_url('admin/slayt/create') ?>"
+              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Yeni Slider Ekle</a>
+            <a href="<?= base_url('admin/slayt/edit') ?>"
+              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Slider Düzenle</a>
+          </div>
+        </div>
 
         <!-- Hizmet Yönetimi - Dropdown -->
         <div class="mb-1">
@@ -126,11 +137,22 @@
           <i class="fas fa-home w-5"></i>
           <span class="font-medium">Ana Sayfa</span>
         </a>
-        <a href="<?= base_url('admin/slayt') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
-          <i class="fas fa-image w-5"></i>
-          <span class="font-medium">Slayt Yönetimi</span>
-        </a>
+        <div class="mb-1">
+          <button onclick="toggleDropdown('slayt-mobile')"
+            class="w-full flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-image w-5"></i>
+              <span class="font-medium">Slider Yönetimi</span>
+            </div>
+            <i class="fas fa-chevron-right text-xs transition-transform" id="slayt-mobile-icon"></i>
+          </button>
+          <div id="slayt-mobile-menu" class="hidden pl-12 mt-1 space-y-1">
+            <a href="<?= base_url('admin/slayt/create') ?>"
+              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Yeni Slider Ekle</a>
+            <a href="<?= base_url('admin/slayt/edit') ?>"
+              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Slider Düzenle</a>
+          </div>
+        </div>
         <div class="mb-1">
           <button onclick="toggleDropdown('hizmet-mobile')"
             class="w-full flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100">

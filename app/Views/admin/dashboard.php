@@ -200,3 +200,4 @@
 
     <!-- Edit Modal -->
     <?php echo view('admin/modals/edit_modal', ['languages' => $languages ?? []]); ?>
+    <?php echo view('admin/sliders/scripts'); ?>
