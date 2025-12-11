@@ -14,6 +14,10 @@ $routes->get('admin/logout', 'Admin\Auth::logout');
 
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('dashboard', 'Admin\Dashboard::index');
+    $routes->post('sliders', 'Admin\Sliders::store');
+    $routes->get('sliders/(:num)', 'Admin\Sliders::show/$1');
+    $routes->post('sliders/(:num)', 'Admin\Sliders::update/$1');
+    $routes->delete('sliders/(:num)', 'Admin\Sliders::delete/$1');
 });
 
 $routes->get('admin', 'Admin\Auth::default');
