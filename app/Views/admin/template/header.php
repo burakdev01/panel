@@ -44,10 +44,10 @@
           <span class="font-medium">Ana Sayfa</span>
         </a>
 
-        <a href="<?= base_url('admin/slayt') ?>"
+        <a href="<?= base_url('admin/slider') ?>"
           class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
           <i class="fas fa-image w-5"></i>
-          <span class="font-medium">Slayt Yönetimi</span>
+          <span class="font-medium">Slider Yönetimi</span>
         </a>
 
         <!-- Hizmet Yönetimi - Dropdown -->
@@ -67,12 +67,6 @@
               class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Hizmetler</a>
           </div>
         </div>
-
-        <a href="<?= base_url('admin/yorum') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
-          <i class="fas fa-comment w-5"></i>
-          <span class="font-medium">Yorum Yönetimi</span>
-        </a>
 
         <a href="<?= base_url('admin/video') ?>"
           class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">

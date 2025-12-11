@@ -31,13 +31,18 @@
             <div
               class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition cursor-pointer bg-white">
               <input type="file" id="imageUpload" class="hidden" accept="image/*" onchange="previewImage(event)">
-              <label for="imageUpload" class="cursor-pointer">
+              <label for="imageUpload" class="cursor-pointer block">
                 <div id="imagePreview" class="mb-4">
                   <i class="fas fa-image text-gray-400 text-5xl mb-3"></i>
                 </div>
                 <p class="text-sm text-blue-500 font-medium mb-1">Resim Seç</p>
                 <p class="text-xs text-gray-500">veya sürükleyip bırakın</p>
               </label>
+              <button type="button" id="removeImageButton"
+                class="mt-4 w-full px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition hidden"
+                onclick="removeSelectedImage()">
+                Resmi Kaldır
+              </button>
             </div>
 
             <!-- Language Selector -->
@@ -127,6 +132,8 @@ const linkInput = document.getElementById('linkInput');
 const languageSelect = document.getElementById('languageSelect');
 const statusToggle = document.getElementById('statusToggle');
 const imageUpload = document.getElementById('imageUpload');
+const removeImageButton = document.getElementById('removeImageButton');
+let isImageRemoved = false;
 
 function openEditModal(id = null) {
   currentSliderId = id;
@@ -152,6 +159,7 @@ function resetForm() {
   }
   if (statusToggle) statusToggle.checked = true;
   if (imageUpload) imageUpload.value = '';
+  isImageRemoved = false;
   setDefaultPreview();
 }
 
@@ -178,6 +186,7 @@ function setDefaultPreview() {
   const preview = document.getElementById('imagePreview');
   if (!preview) return;
   preview.innerHTML = '<i class="fas fa-image text-gray-400 text-5xl mb-3"></i>';
+  toggleRemoveImageButton(false);
 }
 
 function previewImage(event) {
@@ -190,9 +199,28 @@ function previewImage(event) {
       preview.innerHTML = `<img src="${e.target.result}" class="w-full h-48 object-cover rounded-lg">`;
     };
     reader.readAsDataURL(file);
+    isImageRemoved = false;
+    toggleRemoveImageButton(true);
   } else {
     setDefaultPreview();
   }
+}
+
+function toggleRemoveImageButton(show) {
+  if (!removeImageButton) return;
+  if (show) {
+    removeImageButton.classList.remove('hidden');
+  } else {
+    removeImageButton.classList.add('hidden');
+  }
+}
+
+function removeSelectedImage() {
+  if (imageUpload) {
+    imageUpload.value = '';
+  }
+  setDefaultPreview();
+  isImageRemoved = currentSliderId !== null;
 }
 
 function saveContent() {
@@ -203,6 +231,7 @@ function saveContent() {
   formData.append('links', linkInput?.value ?? '');
   formData.append('lang_id', languageSelect?.value ?? '');
   formData.append('active', statusToggle?.checked ? '1' : '0');
+  formData.append('remove_image', isImageRemoved ? '1' : '0');
 
   const file = imageUpload?.files[0];
   if (file) {
@@ -254,11 +283,13 @@ function fillForm(slider) {
   if (linkInput) linkInput.value = slider.links || '';
   if (languageSelect) languageSelect.value = slider.lang_id || '';
   if (statusToggle) statusToggle.checked = parseInt(slider.active, 10) === 1;
+  isImageRemoved = false;
 
   if (slider.image_url) {
     const preview = document.getElementById('imagePreview');
     if (!preview) return;
     preview.innerHTML = `<img src="${slider.image_url}" class="w-full h-48 object-cover rounded-lg">`;
+    toggleRemoveImageButton(true);
   } else {
     setDefaultPreview();
   }

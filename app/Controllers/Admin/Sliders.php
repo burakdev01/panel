@@ -102,9 +102,11 @@ class Sliders extends BaseController
 
         $imageFile = $this->request->getFile('image');
         $imagePath = $slider['image'];
+        $removeImageRequest = $this->request->getPost('remove_image') === '1';
 
         if ($imageFile && $imageFile->isValid()) {
             $imagePath = $this->uploadImage($imageFile, $slider['image']);
+            $removeImageRequest = false;
             if ($imagePath === null) {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                     ->setJSON([
@@ -112,9 +114,12 @@ class Sliders extends BaseController
                         'message' => 'Resim yüklenirken bir hata oluştu.',
                     ]);
             }
+        } elseif ($removeImageRequest && !empty($slider['image'])) {
+            $this->deleteImageFile($slider['image']);
+            $imagePath = null;
         }
 
-        $payload = $this->buildPayload($imagePath);
+        $payload = $this->buildPayload($imagePath, $removeImageRequest);
 
         $this->sliderModel->update($id, $payload);
 
@@ -142,10 +147,7 @@ class Sliders extends BaseController
         $this->sliderModel->delete($id);
 
         if (!empty($slider['image'])) {
-            $absolutePath = FCPATH . $slider['image'];
-            if (is_file($absolutePath)) {
-                @unlink($absolutePath);
-            }
+            $this->deleteImageFile($slider['image']);
         }
 
         return $this->response->setJSON([
@@ -199,7 +201,7 @@ class Sliders extends BaseController
         return 'uploads/sliders/' . $newName;
     }
 
-    private function buildPayload(?string $imagePath = null): array
+    private function buildPayload(?string $imagePath = null, bool $removeImage = false): array
     {
         $activeInput = $this->request->getPost('active');
 
@@ -211,7 +213,9 @@ class Sliders extends BaseController
             'active' => ($activeInput === '1' || $activeInput === 'on') ? 1 : 0,
         ];
 
-        if ($imagePath !== null) {
+        if ($removeImage) {
+            $payload['image'] = null;
+        } elseif ($imagePath !== null) {
             $payload['image'] = $imagePath;
         }
 
@@ -235,6 +239,18 @@ class Sliders extends BaseController
         $slider['image_url'] = !empty($slider['image']) ? base_url($slider['image']) : null;
 
         return $slider;
+    }
+
+    private function deleteImageFile(?string $relativePath): void
+    {
+        if (empty($relativePath)) {
+            return;
+        }
+
+        $absolutePath = FCPATH . $relativePath;
+        if (is_file($absolutePath)) {
+            @unlink($absolutePath);
+        }
     }
 
     private function failNotFoundResponse(): ResponseInterface
