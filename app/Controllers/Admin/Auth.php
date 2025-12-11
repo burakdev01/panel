@@ -35,7 +35,7 @@ class Auth extends BaseController
         // Kullanıcı bulunamadı
         if (!$admin) {
             return redirect()->to('/admin/login')
-                             ->with('error', 'Kullanıcı adı bulunamadı!');
+                             ->with('error', 'Kullanıcı adı bulunamadı! maybe');
         }
 
         // Şifre yanlış
