@@ -1,1 +1,8 @@
 php spark db:seed DatabaseSeeder
+
+git fetch origin
+GitHub’dan güncellemeleri indirir ama kodu değiştirmez
+git pull origin main
+Güncellemeleri indirir ve koduna uygular (merge veya rebase yapar)
+fetch = indir ama dokunma
+pull = indir ve projeme uygula

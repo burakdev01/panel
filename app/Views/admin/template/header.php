@@ -119,6 +119,13 @@
           <span class="font-medium">Blog Yönetimi</span>
         </a>
 
+        <?php $languagesActive = $isAnyPath(['admin/dil', 'admin/languages']); ?>
+        <a href="<?= base_url('admin/dil') ?>"
+          class="<?= $navBaseClass . ' ' . ($languagesActive ? $activeClass : $inactiveClass) ?>">
+          <i class="fas fa-language w-5"></i>
+          <span class="font-medium">Dil Yönetimi</span>
+        </a>
+
         <?php $faqActive = $isPath('admin/sss'); ?>
         <a href="<?= base_url('admin/sss') ?>"
           class="<?= $navBaseClass . ' ' . ($faqActive ? $activeClass : $inactiveClass) ?>">
@@ -202,6 +209,11 @@
           class="<?= $mobileBaseClass . ' ' . ($blogActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-blog w-5"></i>
           <span class="font-medium">Blog Yönetimi</span>
+        </a>
+        <a href="<?= base_url('admin/dil') ?>"
+          class="<?= $mobileBaseClass . ' ' . ($languagesActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
+          <i class="fas fa-language w-5"></i>
+          <span class="font-medium">Dil Yönetimi</span>
         </a>
         <a href="<?= base_url('admin/sss') ?>"
           class="<?= $mobileBaseClass . ' ' . ($faqActive ? $mobileActiveClass : $mobileInactiveClass) ?>">

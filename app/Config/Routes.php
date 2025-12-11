@@ -25,6 +25,11 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('posts/(:num)', 'Admin\Posts::show/$1');
     $routes->post('posts/(:num)', 'Admin\Posts::update/$1');
     $routes->delete('posts/(:num)', 'Admin\Posts::delete/$1');
+    $routes->get('dil', 'Admin\Languages::index');
+    $routes->post('languages', 'Admin\Languages::store');
+    $routes->get('languages/(:num)', 'Admin\Languages::show/$1');
+    $routes->post('languages/(:num)', 'Admin\Languages::update/$1');
+    $routes->delete('languages/(:num)', 'Admin\Languages::delete/$1');
     $routes->post('content/update-order', 'Admin\ContentOrder::update');
 });
 
