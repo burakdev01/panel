@@ -2,14 +2,14 @@
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between px-6 py-5 border-b border-gray-200">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-800">Slider Düzenle</h1>
-        <p class="text-sm text-gray-500 mt-1">Dashboarddaki "Son Eklenen Slaytlar" tablosu burada listelenir.</p>
+        <h1 class="text-2xl font-semibold text-gray-800">Slider Yönetimi</h1>
+        <p class="text-sm text-gray-500 mt-1">Mevcut slaytları düzenleyebilir veya yeni slayt ekleyebilirsiniz.</p>
       </div>
-      <a href="<?= base_url('admin/slayt/create') ?>"
+      <button type="button" onclick="openEditModal()"
         class="px-5 py-2 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition flex items-center justify-center gap-2">
         <i class="fas fa-plus-circle"></i>
         <span>Yeni Slider</span>
-      </a>
+      </button>
     </div>
 
     <div class="overflow-x-auto">

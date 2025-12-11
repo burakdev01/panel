@@ -19,24 +19,11 @@ class Sliders extends BaseController
         $this->languageModel = new LanguageModel();
     }
 
-    public function createForm()
-    {
-        $data = [
-            'title' => 'Yeni Slider',
-            'pageTitle' => 'Yeni Slider Ekle',
-            'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
-        ];
-
-        return view('admin/template/header', $data)
-            . view('admin/sliders/create', $data)
-            . view('admin/template/footer');
-    }
-
     public function editPage()
     {
         $data = [
-            'title' => 'Slider Düzenle',
-            'pageTitle' => 'Slider Düzenle',
+            'title' => 'Slider Yönetimi',
+            'pageTitle' => 'Slider Yönetimi',
             'sliders' => $this->getSlidersWithLanguage(),
             'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
         ];

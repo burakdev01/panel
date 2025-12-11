@@ -14,7 +14,7 @@ $routes->get('admin/logout', 'Admin\Auth::logout');
 
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('dashboard', 'Admin\Dashboard::index');
-    $routes->get('slayt/create', 'Admin\Sliders::createForm');
+    $routes->get('slayt', 'Admin\Sliders::editPage');
     $routes->get('slayt/edit', 'Admin\Sliders::editPage');
     $routes->post('sliders', 'Admin\Sliders::store');
     $routes->get('sliders/(:num)', 'Admin\Sliders::show/$1');

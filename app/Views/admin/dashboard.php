@@ -95,7 +95,7 @@
       </div>
       <div class="p-6">
         <div class="grid grid-cols-2 gap-4">
-          <a href="<?= base_url('admin/slayt/create') ?>"
+          <a href="<?= base_url('admin/slayt') ?>"
             class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition group">
             <i class="fas fa-plus-circle text-3xl text-gray-400 group-hover:text-blue-500 mb-2"></i>
             <span class="text-sm font-medium text-gray-700 group-hover:text-blue-600">Yeni Slayt</span>
