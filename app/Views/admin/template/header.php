@@ -17,6 +17,28 @@
 </head>
 
 <body class="bg-gray-50">
+  <?php
+    $uri = service('uri');
+    $currentPath = trim($uri->getPath(), '/');
+    $isPath = static function(string $path) use ($currentPath): bool {
+        $target = trim($path, '/');
+        return $target === '' ? $currentPath === '' : strpos($currentPath, $target) === 0;
+    };
+    $isAnyPath = static function(array $paths) use ($isPath): bool {
+        foreach ($paths as $path) {
+            if ($isPath($path)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    $navBaseClass = 'flex items-center space-x-3 px-4 py-3 mb-1 rounded-lg transition';
+    $activeClass = 'text-blue-600 bg-blue-50 hover:bg-blue-100';
+    $inactiveClass = 'text-gray-700 hover:bg-gray-100';
+    $mobileBaseClass = 'flex items-center space-x-3 px-4 py-3 mb-1 rounded-lg';
+    $mobileActiveClass = 'text-blue-600 bg-blue-50';
+    $mobileInactiveClass = 'text-gray-700 hover:bg-gray-100';
+  ?>
   <div class="flex h-screen overflow-hidden">
 
     <!-- Sidebar - Desktop -->
@@ -38,56 +60,68 @@
 
       <!-- Navigation -->
       <nav class="flex-1 overflow-y-auto py-4 px-3">
+        <?php $dashboardActive = $isPath('admin/dashboard'); ?>
         <a href="<?= base_url('admin/dashboard') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+          class="<?= $navBaseClass . ' ' . ($dashboardActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-home w-5"></i>
           <span class="font-medium">Ana Sayfa</span>
         </a>
 
+        <?php $sliderActive = $isPath('admin/slayt'); ?>
         <a href="<?= base_url('admin/slayt') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+          class="<?= $navBaseClass . ' ' . ($sliderActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-image w-5"></i>
           <span class="font-medium">Slider Yönetimi</span>
         </a>
 
         <!-- Hizmet Yönetimi - Dropdown -->
+        <?php
+          $serviceCategoryActive = $isPath('admin/hizmet/kategori');
+          $serviceListActive = $currentPath === 'admin/hizmet';
+          $serviceActive = $serviceCategoryActive || $serviceListActive;
+        ?>
         <div class="mb-1">
           <button onclick="toggleDropdown('hizmet')"
-            class="w-full flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+            class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition <?= $serviceActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-700 hover:bg-gray-100' ?>">
             <div class="flex items-center space-x-3">
               <i class="fas fa-layer-group w-5"></i>
               <span class="font-medium">Hizmet Yönetimi</span>
             </div>
-            <i class="fas fa-chevron-right text-xs transition-transform" id="hizmet-icon"></i>
+            <i class="fas fa-chevron-right text-xs transition-transform <?= $serviceActive ? 'rotate-90 text-blue-600' : '' ?>"
+              id="hizmet-icon"></i>
           </button>
-          <div id="hizmet-menu" class="hidden pl-12 mt-1 space-y-1">
+          <div id="hizmet-menu" class="<?= $serviceActive ? '' : 'hidden ' ?>pl-12 mt-1 space-y-1">
             <a href="<?= base_url('admin/hizmet/kategori') ?>"
-              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Kategoriler</a>
+              class="block px-4 py-2 text-sm rounded <?= $serviceCategoryActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Kategoriler</a>
             <a href="<?= base_url('admin/hizmet') ?>"
-              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Hizmetler</a>
+              class="block px-4 py-2 text-sm rounded <?= $serviceListActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Hizmetler</a>
           </div>
         </div>
 
+        <?php $videoActive = $isPath('admin/video'); ?>
         <a href="<?= base_url('admin/video') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+          class="<?= $navBaseClass . ' ' . ($videoActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-video w-5"></i>
           <span class="font-medium">Video Yönetimi</span>
         </a>
 
+        <?php $photoActive = $isPath('admin/fotograf'); ?>
         <a href="<?= base_url('admin/fotograf') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+          class="<?= $navBaseClass . ' ' . ($photoActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-camera w-5"></i>
           <span class="font-medium">Fotoğraf Yönetimi</span>
         </a>
 
+        <?php $blogActive = $isPath('admin/blog'); ?>
         <a href="<?= base_url('admin/blog') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+          class="<?= $navBaseClass . ' ' . ($blogActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-blog w-5"></i>
           <span class="font-medium">Blog Yönetimi</span>
         </a>
 
+        <?php $faqActive = $isPath('admin/sss'); ?>
         <a href="<?= base_url('admin/sss') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100 transition">
+          class="<?= $navBaseClass . ' ' . ($faqActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-question-circle w-5"></i>
           <span class="font-medium">SSS Yönetimi</span>
         </a>
@@ -122,53 +156,55 @@
       <!-- Mobile Navigation (same as desktop) -->
       <nav class="flex-1 overflow-y-auto py-4 px-3">
         <a href="<?= base_url('admin/dashboard') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-blue-600 bg-blue-50 rounded-lg">
+          class="<?= $mobileBaseClass . ' ' . ($dashboardActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-home w-5"></i>
           <span class="font-medium">Ana Sayfa</span>
         </a>
         <a href="<?= base_url('admin/slayt') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($sliderActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-image w-5"></i>
           <span class="font-medium">Slider Yönetimi</span>
         </a>
         <div class="mb-1">
           <button onclick="toggleDropdown('hizmet-mobile')"
-            class="w-full flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100">
+            class="w-full flex items-center justify-between px-4 py-3 rounded-lg <?= $serviceActive ? $mobileActiveClass : $mobileInactiveClass ?>">
             <div class="flex items-center space-x-3">
               <i class="fas fa-layer-group w-5"></i>
               <span class="font-medium">Hizmet Yönetimi</span>
             </div>
-            <i class="fas fa-chevron-right text-xs transition-transform" id="hizmet-mobile-icon"></i>
+            <i class="fas fa-chevron-right text-xs transition-transform <?= $serviceActive ? 'rotate-90 text-blue-600' : '' ?>"
+              id="hizmet-mobile-icon"></i>
           </button>
-          <div id="hizmet-mobile-menu" class="hidden pl-12 mt-1 space-y-1">
+          <div id="hizmet-mobile-menu" class="<?= $serviceActive ? '' : 'hidden ' ?>pl-12 mt-1 space-y-1">
             <a href="<?= base_url('admin/hizmet/kategori') ?>"
-              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Kategoriler</a>
+              class="block px-4 py-2 text-sm rounded <?= $serviceCategoryActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Kategoriler</a>
             <a href="<?= base_url('admin/hizmet') ?>"
-              class="block px-4 py-2 text-sm text-gray-600 rounded hover:bg-gray-100">Hizmetler</a>
+              class="block px-4 py-2 text-sm rounded <?= $serviceListActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Hizmetler</a>
           </div>
         </div>
+        <?php $commentActive = $isPath('admin/yorum'); ?>
         <a href="<?= base_url('admin/yorum') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($commentActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-comment w-5"></i>
           <span class="font-medium">Yorum Yönetimi</span>
         </a>
         <a href="<?= base_url('admin/video') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($videoActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-video w-5"></i>
           <span class="font-medium">Video Yönetimi</span>
         </a>
         <a href="<?= base_url('admin/fotograf') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($photoActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-camera w-5"></i>
           <span class="font-medium">Fotoğraf Yönetimi</span>
         </a>
         <a href="<?= base_url('admin/blog') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($blogActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-blog w-5"></i>
           <span class="font-medium">Blog Yönetimi</span>
         </a>
         <a href="<?= base_url('admin/sss') ?>"
-          class="flex items-center space-x-3 px-4 py-3 mb-1 text-gray-700 rounded-lg hover:bg-gray-100">
+          class="<?= $mobileBaseClass . ' ' . ($faqActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-question-circle w-5"></i>
           <span class="font-medium">SSS Yönetimi</span>
         </a>

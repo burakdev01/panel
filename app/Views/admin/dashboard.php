@@ -2,7 +2,7 @@
 <div>
   <!-- Welcome Section -->
   <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white mb-6">
-    <h1 class="text-2xl md:text-3xl font-bold mb-2">Hoş Geldiniz, <?= session()->get('user_name') ?? 'Admin' ?>!</h1>
+    <h1 class="text-2xl md:text-3xl font-bold mb-2">Hoş Geldiniz, <?= service('auth')->username ?? 'Admin' ?>!</h1>
     <p class="text-blue-100">Deniz Web Ajans Yönetim Paneline hoş geldiniz. İşte bugünün özeti.</p>
   </div>
 
@@ -154,7 +154,8 @@
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center space-x-3">
-                <img src="<?= !empty($slider['image']) ? base_url($slider['image']) : 'https://via.placeholder.com/96?text=Slayt' ?>"
+                <img
+                  src="<?= !empty($slider['image']) ? base_url($slider['image']) : 'https://via.placeholder.com/96?text=Slayt' ?>"
                   alt="<?= esc($slider['title']) ?>" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                 <div>
                   <div class="text-sm font-medium text-gray-900"><?= esc($slider['title']) ?></div>
@@ -179,8 +180,8 @@
                   class="text-blue-600 hover:text-blue-800 transition" title="Düzenle">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="deleteSlider(<?= $slider['id'] ?>)"
-                  class="text-red-600 hover:text-red-800 transition" title="Sil">
+                <button onclick="deleteSlider(<?= $slider['id'] ?>)" class="text-red-600 hover:text-red-800 transition"
+                  title="Sil">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
