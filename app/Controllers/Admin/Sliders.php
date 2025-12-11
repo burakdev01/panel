@@ -81,6 +81,9 @@ class Sliders extends BaseController
         }
 
         $payload = $this->buildPayload($imagePath);
+        if (!array_key_exists('slider_order', $payload)) {
+            $payload['slider_order'] = $this->getNextOrder();
+        }
 
         $id = $this->sliderModel->insert($payload);
 
@@ -227,6 +230,11 @@ class Sliders extends BaseController
             'active' => ($activeInput === '1' || $activeInput === 'on') ? 1 : 0,
         ];
 
+        $orderInput = $this->request->getPost('slider_order');
+        if ($orderInput !== null && $orderInput !== '') {
+            $payload['slider_order'] = (int) $orderInput;
+        }
+
         if ($removeImage) {
             $payload['image'] = null;
         } elseif ($imagePath !== null) {
@@ -249,8 +257,19 @@ class Sliders extends BaseController
         return $this->sliderModel
             ->select('sliders.*, languages.name as language_name')
             ->join('languages', 'languages.id = sliders.lang_id', 'left')
+            ->orderBy('sliders.slider_order', 'ASC')
             ->orderBy('sliders.id', 'DESC')
             ->findAll();
+    }
+
+    private function getNextOrder(): int
+    {
+        $lastOrder = $this->sliderModel
+            ->select('slider_order')
+            ->orderBy('slider_order', 'DESC')
+            ->first();
+
+        return ($lastOrder['slider_order'] ?? 0) + 1;
     }
 
     private function formatSlider(?array $slider): ?array

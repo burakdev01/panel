@@ -40,6 +40,11 @@ class CreateSlidersTable extends Migration
                 'default'    => 1,
                 'comment'    => '1: active, 0: inactive',
             ],
+            'slider_order' => [
+                'type'       => 'INT',
+                'unsigned'   => true,
+                'default'    => 0,
+            ],
         ]);
 
         $this->forge->addKey('id', true);

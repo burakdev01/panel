@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\PostModel;
+use App\Models\SliderModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class ContentOrder extends BaseController
@@ -23,7 +24,12 @@ class ContentOrder extends BaseController
                 ]);
         }
 
-        if ($entity !== 'posts') {
+        $map = [
+            'posts' => ['model' => new PostModel(), 'column' => 'post_order'],
+            'sliders' => ['model' => new SliderModel(), 'column' => 'slider_order'],
+        ];
+
+        if (!array_key_exists($entity, $map)) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
                 ->setJSON([
                     'success' => false,
@@ -31,7 +37,8 @@ class ContentOrder extends BaseController
                 ]);
         }
 
-        $postModel = new PostModel();
+        $model = $map[$entity]['model'];
+        $column = $map[$entity]['column'];
 
         try {
             $db = \Config\Database::connect();
@@ -45,7 +52,7 @@ class ContentOrder extends BaseController
                     continue;
                 }
 
-                $postModel->update($id, ['post_order' => $order]);
+                $model->update($id, [$column => $order]);
             }
 
             $db->transComplete();

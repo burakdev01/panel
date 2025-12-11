@@ -16,6 +16,7 @@ class SliderModel extends Model
         'image',
         'lang_id',
         'active',
+        'slider_order',
     ];
 
     protected $useTimestamps = false;

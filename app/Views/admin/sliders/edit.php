@@ -24,7 +24,7 @@
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">İşlemler</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200" id="sortable-table">
+        <tbody class="divide-y divide-gray-200" id="sortable-table" data-entity="sliders">
           <?php if(isset($sliders) && !empty($sliders)): ?>
           <?php foreach($sliders as $slider): ?>
           <tr class="hover:bg-gray-50 transition sortable-row" data-id="<?= $slider['id'] ?>">
