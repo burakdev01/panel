@@ -41,7 +41,7 @@ class Auth extends BaseController
         // Şifre yanlış
         if (!password_verify($password, $admin['password'])) {
             return redirect()->to('/admin/login')
-                             ->with('error', 'Şifre yanlış! Hey');
+                             ->with('error', 'Şifre yanlış!');
         }
 
         // Session başlat
