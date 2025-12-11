@@ -21,17 +21,21 @@ class CreatePostsTable extends Migration
             'content' => [
                 'type' => 'TEXT',
             ],
-            'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['draft', 'published'],
-                'default'    => 'draft',
+            'image' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 255,
+                'null'       => true,
+            ],
+            'lang' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
             ],
             'seo_title' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'null'       => true,
             ],
-            'seo_description' => [
+            'seo_desc' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'null'       => true,
@@ -39,31 +43,17 @@ class CreatePostsTable extends Migration
             'seo_url' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
+                'null'       => true,
                 'unique'     => true,
             ],
-            'image' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => true,
-            ],
-            'lang_id' => [
-                'type'     => 'INT',
-                'unsigned' => true,
-            ],
-            'created_at' => [
-                'type'    => 'DATETIME',
-                'null'    => true,
-                'default' => null,
-            ],
-            'updated_at' => [
-                'type'    => 'DATETIME',
-                'null'    => true,
-                'default' => null,
+            'active' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 1,
             ],
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('lang_id', 'languages', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('posts');
     }
 

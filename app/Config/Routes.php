@@ -20,6 +20,11 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('sliders/(:num)', 'Admin\Sliders::show/$1');
     $routes->post('sliders/(:num)', 'Admin\Sliders::update/$1');
     $routes->delete('sliders/(:num)', 'Admin\Sliders::delete/$1');
+    $routes->get('blog', 'Admin\Posts::index');
+    $routes->post('posts', 'Admin\Posts::store');
+    $routes->get('posts/(:num)', 'Admin\Posts::show/$1');
+    $routes->post('posts/(:num)', 'Admin\Posts::update/$1');
+    $routes->delete('posts/(:num)', 'Admin\Posts::delete/$1');
 });
 
 $routes->get('admin', 'Admin\Auth::default');
