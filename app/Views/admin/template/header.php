@@ -126,6 +126,13 @@
           <span class="font-medium">Dil Yönetimi</span>
         </a>
 
+        <?php $settingsActive = $isPath('admin/settings'); ?>
+        <a href="<?= base_url('admin/settings') ?>"
+          class="<?= $navBaseClass . ' ' . ($settingsActive ? $activeClass : $inactiveClass) ?>">
+          <i class="fas fa-sliders-h w-5"></i>
+          <span class="font-medium">Site Ayarları</span>
+        </a>
+
         <?php $faqActive = $isPath('admin/sss'); ?>
         <a href="<?= base_url('admin/sss') ?>"
           class="<?= $navBaseClass . ' ' . ($faqActive ? $activeClass : $inactiveClass) ?>">
@@ -214,6 +221,11 @@
           class="<?= $mobileBaseClass . ' ' . ($languagesActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-language w-5"></i>
           <span class="font-medium">Dil Yönetimi</span>
+        </a>
+        <a href="<?= base_url('admin/settings') ?>"
+          class="<?= $mobileBaseClass . ' ' . ($settingsActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
+          <i class="fas fa-sliders-h w-5"></i>
+          <span class="font-medium">Site Ayarları</span>
         </a>
         <a href="<?= base_url('admin/sss') ?>"
           class="<?= $mobileBaseClass . ' ' . ($faqActive ? $mobileActiveClass : $mobileInactiveClass) ?>">

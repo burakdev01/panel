@@ -30,6 +30,10 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('languages/(:num)', 'Admin\Languages::show/$1');
     $routes->post('languages/(:num)', 'Admin\Languages::update/$1');
     $routes->delete('languages/(:num)', 'Admin\Languages::delete/$1');
+    $routes->get('settings', 'Admin\SiteSettings::index');
+    $routes->post('settings/general', 'Admin\SiteSettings::updateSettings');
+    $routes->get('settings/translation/(:num)', 'Admin\SiteSettings::showTranslation/$1');
+    $routes->post('settings/translation/(:num)', 'Admin\SiteSettings::updateTranslation/$1');
     $routes->post('content/update-order', 'Admin\ContentOrder::update');
 });
 
