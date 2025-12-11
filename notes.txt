@@ -1,1 +1,1 @@
-php spark db:seed DatabaseSeedera
+php spark db:seed DatabaseSeeder
