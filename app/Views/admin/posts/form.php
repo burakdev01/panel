@@ -52,7 +52,7 @@
           <?php endforeach; ?>
         </div>
       </div>
-      <div class="p-6 space-y-6">
+      <div class="p-6 flex flex-col gap-6">
         <?php foreach($languages as $index => $language): ?>
         <?php $langId = (int) $language['id']; ?>
         <div class="lang-pane <?= $index !== 0 ? 'hidden' : '' ?>" data-lang-pane="<?= $langId ?>">
