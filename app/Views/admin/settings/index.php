@@ -20,6 +20,57 @@
   </div>
 
   <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="space-y-6">
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800">Dil Bazlı İçerik</h2>
+            <p class="text-sm text-gray-500">SEO ve footer tanıtım metinleri</p>
+          </div>
+          <select id="settingsLanguageSelect"
+            class="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+            <?php foreach($languages as $language): ?>
+            <option value="<?= $language['id'] ?>"><?= esc($language['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div id="languageSettingsForm" class="p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Site Adı (Title)</label>
+            <input type="text" id="siteTitleInput"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+            <input type="text" id="metaTitleInput"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
+            <textarea id="metaKeywordsInput" rows="2"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+            <textarea id="metaDescriptionInput" rows="2"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Author</label>
+            <input type="text" id="metaAuthorInput"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Footer Tanıtım</label>
+            <textarea id="footerDescriptionInput" rows="3"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+          </div>
+          <button onclick="saveLanguageSettings()"
+            class="w-full px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition">Seçili
+            Dili Kaydet</button>
+        </div>
+      </div>
+    </div>
     <div class="xl:col-span-2 space-y-6">
       <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -88,57 +139,7 @@
       </div>
     </div>
 
-    <div class="space-y-6">
-      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <div>
-            <h2 class="text-lg font-semibold text-gray-800">Dil Bazlı İçerik</h2>
-            <p class="text-sm text-gray-500">SEO ve footer tanıtım metinleri</p>
-          </div>
-          <select id="settingsLanguageSelect"
-            class="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-            <?php foreach($languages as $language): ?>
-            <option value="<?= $language['id'] ?>"><?= esc($language['name']) ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div id="languageSettingsForm" class="p-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Site Adı (Title)</label>
-            <input type="text" id="siteTitleInput"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
-            <input type="text" id="metaTitleInput"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
-            <textarea id="metaKeywordsInput" rows="2"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-            <textarea id="metaDescriptionInput" rows="2"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Author</label>
-            <input type="text" id="metaAuthorInput"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Footer Tanıtım</label>
-            <textarea id="footerDescriptionInput" rows="3"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-          </div>
-          <button onclick="saveLanguageSettings()"
-            class="w-full px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition">Seçili
-            Dili Kaydet</button>
-        </div>
-      </div>
-    </div>
+
   </div>
 </div>
 

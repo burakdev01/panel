@@ -64,7 +64,6 @@ class SiteSettings extends BaseController
         }
 
         $translation = $this->translationModel
-            ->where('setting_id', $setting['id'])
             ->where('lang_id', $langId)
             ->first();
 
@@ -132,14 +131,12 @@ class SiteSettings extends BaseController
         ];
 
         $translation = $this->translationModel
-            ->where('setting_id', $setting['id'])
             ->where('lang_id', $langId)
             ->first();
 
         if ($translation) {
             $this->translationModel->update($translation['id'], $payload);
         } else {
-            $payload['setting_id'] = $setting['id'];
             $payload['lang_id'] = $langId;
             $this->translationModel->insert($payload);
         }

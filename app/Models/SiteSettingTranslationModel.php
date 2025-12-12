@@ -6,11 +6,10 @@ use CodeIgniter\Model;
 
 class SiteSettingTranslationModel extends Model
 {
-    protected $table = 'site_setting_translations';
+    protected $table = 'site_settings';
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'setting_id',
         'lang_id',
         'site_title',
         'meta_title',

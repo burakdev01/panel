@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class SiteSettingModel extends Model
 {
-    protected $table = 'site_settings';
+    protected $table = 'site_global_settings';
     protected $primaryKey = 'id';
 
     protected $allowedFields = [

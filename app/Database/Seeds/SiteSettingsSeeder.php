@@ -32,7 +32,6 @@ class SiteSettingsSeeder extends Seeder
         $languages = $languageModel->findAll();
         foreach ($languages as $language) {
             $translation = $translationModel
-                ->where('setting_id', $setting['id'])
                 ->where('lang_id', $language['id'])
                 ->first();
 
@@ -41,7 +40,6 @@ class SiteSettingsSeeder extends Seeder
             }
 
             $translationModel->insert([
-                'setting_id' => $setting['id'],
                 'lang_id' => $language['id'],
                 'site_title' => $language['name'] . ' Site Başlığı',
                 'meta_title' => $language['name'] . ' Meta Title',
