@@ -42,15 +42,14 @@
             </td>
             <td class="px-6 py-4">
               <div class="text-sm font-medium text-gray-900 flex items-center space-x-3">
-                <img
-                  src="<?= !empty($post['image']) ? base_url($post['image']) : 'https://via.placeholder.com/96?text=Blog' ?>"
-                  alt="<?= esc($primaryVariant['title'] ?? 'Blog Yazısı') ?>"
+                <?php 
+  // base_url($post['image'])
+                ?>
+                <img src="<?=$post['image']?>" alt="<?= esc($primaryVariant['title'] ?? 'Blog Yazısı') ?>"
                   class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                 <div class="flex flex-col">
                   <span><?= esc($primaryVariant['title'] ?? 'Dil içeriği bulunmuyor') ?></span>
-                  <?php if(!empty($primaryVariant['language_name'])): ?>
-                  <span class="text-xs text-gray-500"><?= esc($primaryVariant['language_name']) ?></span>
-                  <?php endif; ?>
+
                 </div>
               </div>
             </td>

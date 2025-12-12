@@ -24,7 +24,7 @@ class PostsSeeder extends Seeder
         $posts = [
             [
                 'post' => [
-                    'image' => null,
+                    'image' => "https://imgrosetta.webtekno.com/file/639390/639390-640x360.jpg",
                     'active' => 1,
                     'post_order' => 1,
                 ],
@@ -49,7 +49,7 @@ class PostsSeeder extends Seeder
             ],
             [
                 'post' => [
-                    'image' => null,
+                    'image' => "https://imgrosetta.webtekno.com/file/639360/639360-800x450.jpg",
                     'active' => 1,
                     'post_order' => 2,
                 ],
@@ -66,7 +66,7 @@ class PostsSeeder extends Seeder
             ],
             [
                 'post' => [
-                    'image' => null,
+                    'image' => "https://imgrosetta.webtekno.com/file/639404/639404-800x450.jpg",
                     'active' => 1,
                     'post_order' => 3,
                 ],
