@@ -95,6 +95,9 @@ class Posts extends BaseController
         }
 
         $payload = $this->buildPostPayload($imagePath);
+        if (!array_key_exists('published_at', $payload)) {
+            $payload['published_at'] = date('Y-m-d H:i:s');
+        }
         if (!array_key_exists('post_order', $payload)) {
             $payload['post_order'] = $this->getNextOrder();
         }

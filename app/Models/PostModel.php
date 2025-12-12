@@ -13,6 +13,7 @@ class PostModel extends Model
         'image',
         'active',
         'post_order',
+        'published_at',
     ];
 
     protected $useTimestamps = false;
