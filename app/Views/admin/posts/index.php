@@ -33,6 +33,7 @@
         <tbody class="divide-y divide-gray-200" id="sortable-table" data-entity="posts">
           <?php if(isset($posts) && !empty($posts)): ?>
           <?php foreach($posts as $post): ?>
+          <?php $primaryVariant = $post['primary_variant'] ?? null; ?>
           <tr class="hover:bg-gray-50 transition sortable-row" data-id="<?= $post['id'] ?>">
             <td class="px-4 py-4">
               <div class="flex items-center justify-center cursor-move drag-handle text-gray-400 hover:text-gray-600">
@@ -43,17 +44,31 @@
               <div class="text-sm font-medium text-gray-900 flex items-center space-x-3">
                 <img
                   src="<?= !empty($post['image']) ? base_url($post['image']) : 'https://via.placeholder.com/96?text=Blog' ?>"
-                  alt="<?= esc($post['title']) ?>" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
-                <span><?= esc($post['title']) ?></span>
+                  alt="<?= esc($primaryVariant['title'] ?? 'Blog Yazısı') ?>"
+                  class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                <div class="flex flex-col">
+                  <span><?= esc($primaryVariant['title'] ?? 'Dil içeriği bulunmuyor') ?></span>
+                  <?php if(!empty($primaryVariant['language_name'])): ?>
+                  <span class="text-xs text-gray-500"><?= esc($primaryVariant['language_name']) ?></span>
+                  <?php endif; ?>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4 hidden md:table-cell">
-              <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                <?= esc($post['language_name'] ?? 'Bilinmiyor') ?>
-              </span>
+              <?php if(!empty($post['variants'])): ?>
+              <div class="flex flex-wrap gap-2">
+                <?php foreach($post['variants'] as $variant): ?>
+                <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                  <?= esc($variant['language_name'] ?? 'Dil') ?>
+                </span>
+                <?php endforeach; ?>
+              </div>
+              <?php else: ?>
+              <span class="text-xs text-gray-500">Dil içeriği yok</span>
+              <?php endif; ?>
             </td>
             <td class="px-6 py-4 hidden lg:table-cell">
-              <span class="text-xs text-gray-600"><?= esc($post['seo_url'] ?? '-') ?></span>
+              <span class="text-xs text-gray-600"><?= esc($primaryVariant['seo_url'] ?? '-') ?></span>
             </td>
             <td class="px-6 py-4">
               <span
@@ -90,4 +105,4 @@
 </div>
 
 <?php echo view('admin/posts/modal', ['languages' => $languages ?? []]); ?>
-<?php echo view('admin/posts/scripts'); ?>
+<?php echo view('admin/posts/scripts', ['languages' => $languages ?? []]); ?>

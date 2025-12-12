@@ -5,18 +5,26 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\LanguageModel;
 use App\Models\PostModel;
+use App\Models\PostVariantModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Posts extends BaseController
 {
     protected PostModel $postModel;
+    protected PostVariantModel $postVariantModel;
     protected LanguageModel $languageModel;
+    protected array $languages = [];
+    protected array $languageMap = [];
 
     public function __construct()
     {
         helper(['form', 'url']);
         $this->postModel = new PostModel();
         $this->languageModel = new LanguageModel();
+        $this->postVariantModel = new PostVariantModel();
+
+        $this->languages = $this->languageModel->orderBy('name', 'ASC')->findAll();
+        $this->languageMap = array_column($this->languages, null, 'id');
     }
 
     public function index()
@@ -25,7 +33,7 @@ class Posts extends BaseController
             'title' => 'Blog Yönetimi',
             'pageTitle' => 'Blog Yönetimi',
             'posts' => $this->getPosts(),
-            'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
+            'languages' => $this->languages,
         ];
 
         return view('admin/template/header', $data)
@@ -45,9 +53,11 @@ class Posts extends BaseController
             return $this->failNotFoundResponse();
         }
 
+        $post['variants'] = $this->getVariantsForPost($id);
+
         return $this->response->setJSON([
             'success' => true,
-            'data' => $this->formatPost($post),
+            'data' => $this->formatPost($post, true),
         ]);
     }
 
@@ -58,6 +68,15 @@ class Posts extends BaseController
                 ->setJSON([
                     'success' => false,
                     'errors' => $this->validator?->getErrors(),
+                ]);
+        }
+
+        [$variantsPayload, $variantErrors] = $this->prepareVariantsPayload();
+        if (!empty($variantErrors)) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
+                ->setJSON([
+                    'success' => false,
+                    'errors' => $variantErrors,
                 ]);
         }
 
@@ -75,19 +94,22 @@ class Posts extends BaseController
             }
         }
 
-        $payload = $this->buildPayload($imagePath);
+        $payload = $this->buildPostPayload($imagePath);
         if (!array_key_exists('post_order', $payload)) {
             $payload['post_order'] = $this->getNextOrder();
         }
 
-        $id = $this->postModel->insert($payload);
+        $id = $this->postModel->insert($payload, true);
+        $this->syncVariants($id, $variantsPayload);
+
         $post = $this->postModel->find($id);
+        $post['variants'] = $this->getVariantsForPost($id);
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_CREATED)
             ->setJSON([
                 'success' => true,
                 'message' => 'Blog yazısı oluşturuldu.',
-                'data' => $this->formatPost($post),
+                'data' => $this->formatPost($post, true),
             ]);
     }
 
@@ -103,11 +125,20 @@ class Posts extends BaseController
             return $this->failNotFoundResponse();
         }
 
-        if (!$this->validate($this->validationRules(false, $id))) {
+        if (!$this->validate($this->validationRules())) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
                 ->setJSON([
                     'success' => false,
                     'errors' => $this->validator?->getErrors(),
+                ]);
+        }
+
+        [$variantsPayload, $variantErrors] = $this->prepareVariantsPayload();
+        if (!empty($variantErrors)) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
+                ->setJSON([
+                    'success' => false,
+                    'errors' => $variantErrors,
                 ]);
         }
 
@@ -130,16 +161,18 @@ class Posts extends BaseController
             $imagePath = null;
         }
 
-        $payload = $this->buildPayload($imagePath, $removeImageRequest);
+        $payload = $this->buildPostPayload($imagePath, $removeImageRequest);
 
         $this->postModel->update($id, $payload);
+        $this->syncVariants($id, $variantsPayload);
 
         $updated = $this->postModel->find($id);
+        $updated['variants'] = $this->getVariantsForPost($id);
 
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Blog yazısı güncellendi.',
-            'data' => $this->formatPost($updated),
+            'data' => $this->formatPost($updated, true),
         ]);
     }
 
@@ -167,18 +200,9 @@ class Posts extends BaseController
         ]);
     }
 
-    private function validationRules(bool $isCreate = true, ?int $id = null): array
+    private function validationRules(): array
     {
-        $seoUrlRule = 'permit_empty|max_length[255]';
-        $seoUrlRule .= $isCreate ? '|is_unique[posts.seo_url]' : '|is_unique[posts.seo_url,id,' . $id . ']';
-
         $rules = [
-            'title' => 'required|min_length[3]|max_length[255]',
-            'content' => 'required|string',
-            'lang_id' => 'required|is_not_unique[languages.id]',
-            'seo_title' => 'permit_empty|max_length[255]',
-            'seo_desc' => 'permit_empty|max_length[255]',
-            'seo_url' => $seoUrlRule,
             'active' => 'permit_empty|in_list[0,1]',
             'post_order' => 'permit_empty|integer',
         ];
@@ -214,17 +238,11 @@ class Posts extends BaseController
         return 'uploads/posts/' . $newName;
     }
 
-    private function buildPayload(?string $imagePath = null, bool $removeImage = false): array
+    private function buildPostPayload(?string $imagePath = null, bool $removeImage = false): array
     {
         $activeInput = $this->request->getPost('active');
 
         $payload = [
-            'title' => $this->request->getPost('title'),
-            'content' => $this->request->getPost('content'),
-            'lang_id' => (int) $this->request->getPost('lang_id'),
-            'seo_title' => $this->request->getPost('seo_title'),
-            'seo_desc' => $this->request->getPost('seo_desc'),
-            'seo_url' => $this->request->getPost('seo_url'),
             'active' => ($activeInput === '1' || $activeInput === 'on') ? 1 : 0,
         ];
 
@@ -254,18 +272,59 @@ class Posts extends BaseController
 
     private function getPosts(): array
     {
-        return $this->postModel
-            ->select('posts.*, languages.name as language_name')
-            ->join('languages', 'languages.id = posts.lang_id', 'left')
+        $posts = $this->postModel
             ->orderBy('posts.post_order', 'ASC')
             ->orderBy('posts.id', 'DESC')
             ->findAll();
+
+        if (empty($posts)) {
+            return [];
+        }
+
+        $postIds = array_column($posts, 'id');
+        $variants = $this->postVariantModel
+            ->select('post_variants.*, languages.name as language_name')
+            ->join('languages', 'languages.id = post_variants.lang_id', 'left')
+            ->whereIn('post_variants.post_id', $postIds)
+            ->orderBy('languages.name', 'ASC')
+            ->findAll();
+
+        $grouped = [];
+        foreach ($variants as $variant) {
+            $grouped[$variant['post_id']][] = $variant;
+        }
+
+        foreach ($posts as &$post) {
+            $postVariants = $grouped[$post['id']] ?? [];
+            $post['variants'] = $postVariants;
+            $post['primary_variant'] = $postVariants[0] ?? null;
+            $post = $this->formatPost($post);
+        }
+        unset($post);
+
+        return $posts;
     }
 
-    private function formatPost(?array $post): ?array
+    private function getVariantsForPost(int $postId): array
+    {
+        return $this->postVariantModel
+            ->select('post_variants.*, languages.name as language_name')
+            ->join('languages', 'languages.id = post_variants.lang_id', 'left')
+            ->where('post_variants.post_id', $postId)
+            ->orderBy('languages.name', 'ASC')
+            ->findAll();
+    }
+
+    private function formatPost(?array $post, bool $includeVariants = false): ?array
     {
         if ($post === null) {
             return null;
+        }
+
+        if ($includeVariants) {
+            $post['variants'] = $post['variants'] ?? $this->getVariantsForPost((int) $post['id']);
+        } else {
+            $post['variants'] = $post['variants'] ?? [];
         }
 
         $post['image_url'] = !empty($post['image']) ? base_url($post['image']) : null;
@@ -292,5 +351,138 @@ class Posts extends BaseController
                 'success' => false,
                 'message' => 'Blog yazısı bulunamadı.',
             ]);
+    }
+
+    private function prepareVariantsPayload(): array
+    {
+        $rawVariants = $this->request->getPost('variants');
+        $prepared = [];
+        $errors = [];
+        $hasActiveVariant = false;
+
+        if (!is_array($rawVariants)) {
+            return [[], ['variants' => 'En az bir dil için içerik girmeniz gerekiyor.']];
+        }
+
+        foreach ($rawVariants as $langId => $fields) {
+            $langId = (int) $langId;
+            $rawVariantId = $fields['id'] ?? null;
+            $variantId = null;
+            if ($rawVariantId !== null && $rawVariantId !== '' && (int) $rawVariantId > 0) {
+                $variantId = (int) $rawVariantId;
+            }
+            $title = trim((string) ($fields['title'] ?? ''));
+            $contentRaw = (string) ($fields['content'] ?? '');
+            $contentIsEmpty = trim($contentRaw) === '';
+            $seoTitle = trim((string) ($fields['seo_title'] ?? ''));
+            $seoDesc = trim((string) ($fields['seo_desc'] ?? ''));
+            $seoUrl = trim((string) ($fields['seo_url'] ?? ''));
+
+            $isEmpty = $title === '' && $contentIsEmpty && $seoUrl === '';
+
+            if ($variantId === null && $isEmpty) {
+                continue;
+            }
+
+            if (!$this->languageExists($langId)) {
+                $errors["variants.$langId.lang_id"] = 'Geçersiz dil seçildi.';
+                continue;
+            }
+
+            if ($isEmpty && $variantId !== null) {
+                $prepared[] = [
+                    'id' => $variantId,
+                    'lang_id' => $langId,
+                    'delete' => true,
+                ];
+                continue;
+            }
+
+            $fieldErrors = [];
+            if ($title === '') {
+                $fieldErrors[] = 'Başlık zorunludur.';
+            }
+            if ($contentIsEmpty) {
+                $fieldErrors[] = 'İçerik zorunludur.';
+            }
+            if ($seoUrl === '') {
+                $fieldErrors[] = 'SEO URL zorunludur.';
+            }
+
+            if (!empty($fieldErrors)) {
+                $errors["variants.$langId"] = implode(' ', $fieldErrors);
+                continue;
+            }
+
+            if ($seoUrl !== '') {
+                $conflictQuery = $this->postVariantModel->builder();
+                $conflictQuery->select('id')
+                    ->where('lang_id', $langId)
+                    ->where('seo_url', $seoUrl);
+
+                if ($variantId !== null) {
+                    $conflictQuery->where('id !=', $variantId);
+                }
+
+                $conflict = $conflictQuery->get(1)->getFirstRow();
+                if ($conflict !== null) {
+                    $errors["variants.$langId.seo_url"] = 'Bu dil için SEO URL zaten kullanılıyor.';
+                    continue;
+                }
+            }
+
+            $hasActiveVariant = true;
+
+            $prepared[] = [
+                'id' => $variantId,
+                'lang_id' => $langId,
+                'title' => $title,
+                'content' => $contentRaw,
+                'seo_title' => $seoTitle !== '' ? $seoTitle : null,
+                'seo_desc' => $seoDesc !== '' ? $seoDesc : null,
+                'seo_url' => $seoUrl,
+            ];
+        }
+
+        if (!$hasActiveVariant) {
+            $errors['variants'] = 'En az bir dil için içerik girmeniz gerekiyor.';
+        }
+
+        return [$prepared, $errors];
+    }
+
+    private function languageExists(int $langId): bool
+    {
+        return isset($this->languageMap[$langId]);
+    }
+
+    private function syncVariants(int $postId, array $variants): void
+    {
+        foreach ($variants as $variant) {
+            $variantId = $variant['id'] ?? null;
+            $shouldDelete = !empty($variant['delete']);
+
+            if ($shouldDelete && $variantId !== null) {
+                $this->postVariantModel->delete($variantId);
+                continue;
+            }
+
+            $data = [
+                'lang_id' => $variant['lang_id'],
+                'title' => $variant['title'],
+                'content' => $variant['content'],
+                'seo_title' => $variant['seo_title'],
+                'seo_desc' => $variant['seo_desc'],
+                'seo_url' => $variant['seo_url'],
+            ];
+
+            if ($variantId !== null) {
+                $this->postVariantModel->update($variantId, $data);
+                continue;
+            }
+
+            $data['post_id'] = $postId;
+            $this->postVariantModel->insert($data);
+        }
     }
 }

@@ -10,13 +10,7 @@ class PostModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'title',
-        'content',
         'image',
-        'lang_id',
-        'seo_title',
-        'seo_desc',
-        'seo_url',
         'active',
         'post_order',
     ];

@@ -24,20 +24,6 @@
       </div>
 
       <div class="mt-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Dil</label>
-        <select id="postLanguageSelect"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
-          <?php if(!empty($languages)): ?>
-          <?php foreach($languages as $language): ?>
-          <option value="<?= esc($language['id']) ?>"><?= esc($language['name']) ?></option>
-          <?php endforeach; ?>
-          <?php else: ?>
-          <option value="">Dil bulunamadı</option>
-          <?php endif; ?>
-        </select>
-      </div>
-
-      <div class="mt-6">
         <label class="block text-sm font-medium text-gray-700 mb-3">Durum</label>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" id="postStatusToggle" class="sr-only peer" checked>
@@ -52,60 +38,97 @@
   </div>
 
   <!-- Right Column -->
-<div class="lg:col-span-2">
-    <div class="space-y-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Başlık:</label>
-        <input type="text" id="postTitleInput" placeholder="Başlık"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">İçerik:</label>
-        <textarea id="postContentInput" rows="6" placeholder="Blog içeriğini yazın"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"></textarea>
-      </div>
-
-      <?php $seoBaseUrl = rtrim(base_url(), '/') . '/'; ?>
-      <div class="bg-gray-50 rounded-2xl p-6">
-        <h3 class="text-base font-semibold text-gray-800 mb-4">SEO Bilgileri</h3>
-
-        <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-          <p id="seoPreviewTitle" class="text-lg font-medium text-blue-700">Başlık</p>
-          <p id="seoPreviewUrl" class="text-sm text-green-600 mt-1 break-all"><?= esc($seoBaseUrl) ?></p>
-          <p id="seoPreviewDescription" class="text-sm text-gray-600 mt-1">Açıklama</p>
+  <div class="lg:col-span-2">
+    <?php if(!empty($languages)): ?>
+    <?php $seoBaseUrl = rtrim(base_url(), '/') . '/'; ?>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
+      <div class="border-b border-gray-200 px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          <?php foreach($languages as $index => $language): ?>
+          <button type="button" data-lang-tab="<?= esc($language['id']) ?>"
+            class="lang-tab px-4 py-2 rounded-full text-sm font-medium transition border <?= $index === 0 ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 border-transparent hover:bg-gray-100' ?>">
+            <?= esc($language['name']) ?>
+          </button>
+          <?php endforeach; ?>
         </div>
+      </div>
+      <div class="p-6 space-y-6">
+        <?php foreach($languages as $index => $language): ?>
+        <?php $langId = (int) $language['id']; ?>
+        <div class="lang-pane <?= $index !== 0 ? 'hidden' : '' ?>" data-lang-pane="<?= $langId ?>">
+          <input type="hidden" id="variantId_<?= $langId ?>" data-variant-field="id" data-lang-id="<?= $langId ?>">
 
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">SEO Title:</label>
-            <input type="text" id="postSeoTitleInput" placeholder="SEO başlığı"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Başlık:</label>
+              <input type="text" placeholder="Başlık" id="variantTitle_<?= $langId ?>"
+                data-variant-field="title" data-lang-id="<?= $langId ?>"
+                class="variant-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">İçerik:</label>
+              <textarea rows="6" placeholder="Blog içeriğini yazın" id="variantContent_<?= $langId ?>"
+                data-variant-field="content" data-lang-id="<?= $langId ?>"
+                class="variant-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"></textarea>
+            </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">SEO Description:</label>
-            <textarea id="postSeoDescInput" rows="3" placeholder="SEO açıklaması"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"></textarea>
-          </div>
+          <div class="bg-gray-50 rounded-2xl p-6 mt-6">
+            <h3 class="text-base font-semibold text-gray-800 mb-4">SEO Bilgileri</h3>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">SEO URL:</label>
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <input type="text" value="<?= esc($seoBaseUrl) ?>" readonly
-                class="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none">
-              <div class="relative flex-1">
-                <input type="text" id="postSeoUrlInput" placeholder="seo-url"
-                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
-                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                  <i class="fas fa-exclamation-circle text-red-400 opacity-0" id="seoUrlWarning"></i>
+            <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+              <p id="seoPreviewTitle_<?= $langId ?>" class="text-lg font-medium text-blue-700">Başlık</p>
+              <p id="seoPreviewUrl_<?= $langId ?>" class="text-sm text-green-600 mt-1 break-all">
+                <?= esc($seoBaseUrl) ?>
+              </p>
+              <p id="seoPreviewDescription_<?= $langId ?>" class="text-sm text-gray-600 mt-1">Açıklama</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">SEO Title:</label>
+                <input type="text" placeholder="SEO başlığı" id="variantSeoTitle_<?= $langId ?>"
+                  data-variant-field="seo_title" data-lang-id="<?= $langId ?>"
+                  class="variant-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus-border-transparent outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">SEO Description:</label>
+                <textarea rows="3" placeholder="SEO açıklaması" id="variantSeoDesc_<?= $langId ?>"
+                  data-variant-field="seo_desc" data-lang-id="<?= $langId ?>"
+                  class="variant-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus-border-transparent outline-none transition resize-none"></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">SEO URL:</label>
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <input type="text" value="<?= esc($seoBaseUrl) ?>" readonly
+                    class="w-full sm:w-auto px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none">
+                  <div class="relative flex-1">
+                    <input type="text" placeholder="seo-url" id="variantSeoUrl_<?= $langId ?>"
+                      data-variant-field="seo_url" data-lang-id="<?= $langId ?>"
+                      class="variant-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus-border-transparent outline-none transition">
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                      <i class="fas fa-exclamation-circle text-red-400 opacity-0"
+                        id="seoUrlWarning_<?= $langId ?>"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <?php endforeach; ?>
       </div>
+      <div class="px-6 pb-6 text-xs text-gray-500 border-t border-gray-100">
+        Bir dili boş bırakırsanız bu dil için içerik kaydedilmez. Mevcut bir dilin tüm alanlarını temizleyerek varyantı silebilirsiniz.
+      </div>
+    <?php else: ?>
+    <div class="bg-white rounded-2xl shadow-sm border border-dashed border-gray-300 p-6 text-center text-gray-500">
+      Dil tanımlı olmadığı için içerik girişi yapılamıyor. Lütfen önce dil ekleyin.
     </div>
+    <?php endif; ?>
   </div>
 
 </div>
