@@ -1,6 +1,7 @@
 <script>
 const settingsBaseUrl = '<?= rtrim(base_url(), '/') ?>' + '/';
 const siteBaseUrlInput = document.getElementById('siteBaseUrl');
+const defaultLanguageSelect = document.getElementById('defaultLanguageSelect');
 const googleAnalyticsInput = document.getElementById('googleAnalytics');
 const googleSearchConsoleInput = document.getElementById('googleSearchConsole');
 const smtpHostInput = document.getElementById('smtpHost');
@@ -26,6 +27,7 @@ if (languageSelect?.value) {
 function saveGeneralSettings() {
   const formData = new FormData();
   formData.append('site_base_url', siteBaseUrlInput?.value ?? '');
+  formData.append('default_language_id', defaultLanguageSelect?.value ?? '');
   formData.append('google_analytics', googleAnalyticsInput?.value ?? '');
   formData.append('google_search_console', googleSearchConsoleInput?.value ?? '');
   formData.append('smtp_host', smtpHostInput?.value ?? '');

@@ -11,6 +11,7 @@ class SiteSettingModel extends Model
 
     protected $allowedFields = [
         'site_base_url',
+        'default_language_id',
         'google_analytics',
         'google_search_console',
         'smtp_host',

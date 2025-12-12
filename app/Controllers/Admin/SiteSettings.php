@@ -28,6 +28,7 @@ class SiteSettings extends BaseController
         if (!$setting) {
             $settingId = $this->settingModel->insert([
                 'site_base_url' => null,
+                'default_language_id' => null,
                 'google_analytics' => null,
                 'google_search_console' => null,
                 'smtp_host' => null,
@@ -84,6 +85,7 @@ class SiteSettings extends BaseController
         $rules = [
             'site_base_url' => 'permit_empty|valid_url',
             'smtp_port' => 'permit_empty|numeric',
+            'default_language_id' => 'permit_empty|is_not_unique[languages.id]',
         ];
 
         if (!$this->validate($rules)) {
@@ -94,8 +96,11 @@ class SiteSettings extends BaseController
                 ]);
         }
 
+        $defaultLanguageId = $this->request->getPost('default_language_id');
+
         $this->settingModel->update($setting['id'], [
             'site_base_url' => $this->request->getPost('site_base_url'),
+            'default_language_id' => $defaultLanguageId !== null && $defaultLanguageId !== '' ? (int) $defaultLanguageId : null,
             'google_analytics' => $this->request->getPost('google_analytics'),
             'google_search_console' => $this->request->getPost('google_search_console'),
             'smtp_host' => $this->request->getPost('smtp_host'),
