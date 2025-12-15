@@ -10,11 +10,7 @@ class SliderModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'title',
-        'details',
-        'links',
         'image',
-        'lang_id',
         'active',
         'slider_order',
     ];

@@ -4,16 +4,64 @@ let currentSliderId = null;
 const modalTitle = document.getElementById('modalTitle');
 
 const sliderIdField = document.getElementById('sliderId');
-const titleInput = document.getElementById('titleInput');
-const detailsInput = document.getElementById('detailsInput');
-const linkInput = document.getElementById('linkInput');
-const languageSelect = document.getElementById('languageSelect');
 const statusToggle = document.getElementById('statusToggle');
 const imageUpload = document.getElementById('imageUpload');
 const removeImageButton = document.getElementById('removeImageButton');
 let isImageRemoved = false;
 
+const sliderLanguages = <?= json_encode($languages ?? []) ?>;
+const sliderVariantKeys = ['title', 'details', 'links'];
+const sliderVariantFields = {};
+let sliderActiveLangId = sliderLanguages.length ? String(sliderLanguages[0].id) : null;
+
+sliderLanguages.forEach(language => {
+  const langId = String(language.id);
+  sliderVariantFields[langId] = {
+    id: document.getElementById(`sliderVariantId_${langId}`),
+    title: document.getElementById(`sliderVariantTitle_${langId}`),
+    details: document.getElementById(`sliderVariantDetails_${langId}`),
+    links: document.getElementById(`sliderVariantLink_${langId}`),
+  };
+});
+
+const sliderLangTabs = document.querySelectorAll('[data-slider-lang-tab]');
+const sliderLangPanes = document.querySelectorAll('[data-slider-lang-pane]');
+
+sliderLangTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const langId = tab.getAttribute('data-slider-lang-tab');
+    setActiveSliderLang(langId);
+  });
+});
+
+function setActiveSliderLang(langId) {
+  if (!langId) {
+    return;
+  }
+  sliderActiveLangId = langId;
+
+  sliderLangTabs.forEach(tab => {
+    const tabLang = tab.getAttribute('data-slider-lang-tab');
+    if (tabLang === langId) {
+      tab.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-200');
+      tab.classList.remove('text-gray-600', 'border-transparent');
+    } else {
+      tab.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-200');
+      tab.classList.add('text-gray-600', 'border-transparent');
+    }
+  });
+
+  sliderLangPanes.forEach(pane => {
+    pane.classList.toggle('hidden', pane.getAttribute('data-slider-lang-pane') !== langId);
+  });
+}
+
 function openEditModal(id = null) {
+  if (!sliderLanguages.length) {
+    alert('Dil tanımı olmadan slider eklenemez. Lütfen önce dil ekleyin.');
+    return;
+  }
+
   currentSliderId = id;
   resetForm();
   if (modalTitle) {
@@ -26,6 +74,10 @@ function openEditModal(id = null) {
     document.body.style.overflow = 'hidden';
   }
 
+  if (sliderActiveLangId) {
+    setActiveSliderLang(sliderActiveLangId);
+  }
+
   if (id) {
     loadContentData(id);
   }
@@ -33,16 +85,29 @@ function openEditModal(id = null) {
 
 function resetForm() {
   if (sliderIdField) sliderIdField.value = '';
-  if (titleInput) titleInput.value = '';
-  if (detailsInput) detailsInput.value = '';
-  if (linkInput) linkInput.value = '';
-  if (languageSelect && languageSelect.options.length) {
-    languageSelect.selectedIndex = 0;
-  }
   if (statusToggle) statusToggle.checked = true;
   if (imageUpload) imageUpload.value = '';
   isImageRemoved = false;
   setDefaultPreview();
+  resetSliderVariantFields();
+  if (sliderLanguages.length) {
+    setActiveSliderLang(String(sliderLanguages[0].id));
+  }
+}
+
+function resetSliderVariantFields() {
+  Object.keys(sliderVariantFields).forEach(langId => {
+    const fields = sliderVariantFields[langId];
+    if (!fields) {
+      return;
+    }
+    if (fields.id) fields.id.value = '';
+    sliderVariantKeys.forEach(key => {
+      if (fields[key]) {
+        fields[key].value = '';
+      }
+    });
+  });
 }
 
 function closeEditModal() {
@@ -107,18 +172,67 @@ function removeSelectedImage() {
   isImageRemoved = currentSliderId !== null;
 }
 
+function sliderVariantHasContent(fields) {
+  if (!fields) {
+    return false;
+  }
+
+  return sliderVariantKeys.some(key => {
+    const value = fields[key]?.value ?? '';
+    return value.trim() !== '';
+  });
+}
+
 function saveContent() {
+  if (!sliderLanguages.length) {
+    alert('Dil tanımı olmadığı için slider eklenemez.');
+    return;
+  }
+
   const formData = new FormData();
-  formData.append('title', titleInput?.value ?? '');
-  formData.append('details', detailsInput?.value ?? '');
-  formData.append('links', linkInput?.value ?? '');
-  formData.append('lang_id', languageSelect?.value ?? '');
   formData.append('active', statusToggle?.checked ? '1' : '0');
   formData.append('remove_image', isImageRemoved ? '1' : '0');
 
   const file = imageUpload?.files[0];
   if (file) {
     formData.append('image', file);
+  }
+
+  let hasAnyVariant = false;
+
+  sliderLanguages.forEach(language => {
+    const langId = String(language.id);
+    const fields = sliderVariantFields[langId];
+    if (!fields) {
+      return;
+    }
+
+    const variantId = (fields.id?.value || '').trim();
+    const hasContent = sliderVariantHasContent(fields);
+
+    if (!variantId && !hasContent) {
+      return;
+    }
+
+    hasAnyVariant = true;
+    const prefix = `variants[${langId}]`;
+    formData.append(`${prefix}[id]`, variantId);
+
+    if (!hasContent && variantId) {
+      sliderVariantKeys.forEach(key => {
+        formData.append(`${prefix}[${key}]`, '');
+      });
+      return;
+    }
+
+    formData.append(`${prefix}[title]`, fields.title?.value ?? '');
+    formData.append(`${prefix}[details]`, fields.details?.value ?? '');
+    formData.append(`${prefix}[links]`, fields.links?.value ?? '');
+  });
+
+  if (!hasAnyVariant) {
+    alert('En az bir dil için içerik girmelisiniz.');
+    return;
   }
 
   const url = currentSliderId ? `${baseUrl}admin/sliders/${currentSliderId}` : `${baseUrl}admin/sliders`;
@@ -161,12 +275,35 @@ function loadContentData(id) {
 
 function fillForm(slider) {
   if (sliderIdField) sliderIdField.value = slider.id;
-  if (titleInput) titleInput.value = slider.title || '';
-  if (detailsInput) detailsInput.value = slider.details || '';
-  if (linkInput) linkInput.value = slider.links || '';
-  if (languageSelect) languageSelect.value = slider.lang_id || '';
   if (statusToggle) statusToggle.checked = parseInt(slider.active, 10) === 1;
   isImageRemoved = false;
+
+  const variantMap = {};
+  (slider.variants || []).forEach(variant => {
+    variantMap[String(variant.lang_id)] = variant;
+  });
+
+  sliderLanguages.forEach(language => {
+    const langId = String(language.id);
+    const fields = sliderVariantFields[langId];
+    const variant = variantMap[langId] || null;
+
+    if (!fields) {
+      return;
+    }
+
+    if (fields.id) fields.id.value = variant?.id ?? '';
+    if (fields.title) fields.title.value = variant?.title ?? '';
+    if (fields.details) fields.details.value = variant?.details ?? '';
+    if (fields.links) fields.links.value = variant?.links ?? '';
+  });
+
+  const firstWithContent = sliderLanguages.find(language => {
+    const langId = String(language.id);
+    return sliderVariantHasContent(sliderVariantFields[langId]);
+  });
+
+  setActiveSliderLang(firstWithContent ? String(firstWithContent.id) : String(sliderLanguages[0].id));
 
   if (slider.image_url) {
     const preview = document.getElementById('imagePreview');
@@ -209,5 +346,9 @@ function deleteSlider(id) {
       }
     })
     .catch(() => alert('Slayt silinemedi.'));
+}
+
+if (sliderActiveLangId) {
+  setActiveSliderLang(sliderActiveLangId);
 }
 </script>

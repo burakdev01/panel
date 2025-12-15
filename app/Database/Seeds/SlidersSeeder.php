@@ -2,8 +2,9 @@
 
 namespace App\Database\Seeds;
 
-use App\Models\SliderModel;
 use App\Models\LanguageModel;
+use App\Models\SliderModel;
+use App\Models\SliderVariantModel;
 use CodeIgniter\Database\Seeder;
 
 class SlidersSeeder extends Seeder
@@ -22,37 +23,79 @@ class SlidersSeeder extends Seeder
 
         $sliders = [
             [
-                'title' => 'Hoş Geldiniz',
-                'details' => 'Deniz Web Ajans ile projelerinize güç katın.',
-                'links' => null,
-                'image' => 'image',
-                'lang_id' => $defaultLangId,
-                'active' => 1,
-                'slider_order' => 1,
+                'slider' => [
+                    'image' => 'https://via.placeholder.com/960x480?text=Slider+1',
+                    'active' => 1,
+                    'slider_order' => 1,
+                ],
+                'variants' => [
+                    [
+                        'lang_id' => $defaultLangId,
+                        'title' => 'Hoş Geldiniz',
+                        'details' => 'Deniz Web Ajans ile projelerinize güç katın.',
+                        'links' => null,
+                    ],
+                    [
+                        'lang_id' => $languages[1]['id'] ?? $defaultLangId,
+                        'title' => 'Welcome',
+                        'details' => 'Empower your projects with Deniz Web Agency.',
+                        'links' => null,
+                    ],
+                ],
             ],
             [
-                'title' => 'Profesyonel Tasarım',
-                'details' => 'Modern ve kullanıcı dostu arayüzler tasarlıyoruz.',
-                'links' => null,
-                'image' => 'image',
-                'lang_id' => $defaultLangId,
-                'active' => 1,
-                'slider_order' => 2,
+                'slider' => [
+                    'image' => 'https://via.placeholder.com/960x480?text=Slider+2',
+                    'active' => 1,
+                    'slider_order' => 2,
+                ],
+                'variants' => [
+                    [
+                        'lang_id' => $defaultLangId,
+                        'title' => 'Profesyonel Tasarım',
+                        'details' => 'Modern ve kullanıcı dostu arayüzler tasarlıyoruz.',
+                        'links' => null,
+                    ],
+                ],
             ],
             [
-                'title' => 'Teknik Destek',
-                'details' => '7/24 destek ile yanınızdayız.',
-                'links' => null,
-                'image' => 'image',
-                'lang_id' => $languages[1]['id'] ?? $defaultLangId,
-                'active' => 1,
-                'slider_order' => 3,
+                'slider' => [
+                    'image' => 'https://via.placeholder.com/960x480?text=Slider+3',
+                    'active' => 1,
+                    'slider_order' => 3,
+                ],
+                'variants' => [
+                    [
+                        'lang_id' => $defaultLangId,
+                        'title' => 'Teknik Destek',
+                        'details' => '7/24 destek ile yanınızdayız.',
+                        'links' => null,
+                    ],
+                    [
+                        'lang_id' => $languages[1]['id'] ?? $defaultLangId,
+                        'title' => 'Technical Support',
+                        'details' => 'We stand by you with around-the-clock support.',
+                        'links' => null,
+                    ],
+                ],
             ],
         ];
 
         $sliderModel = new SliderModel();
-        foreach ($sliders as $slider) {
-            $sliderModel->insert($slider);
+        $variantModel = new SliderVariantModel();
+
+        foreach ($sliders as $sliderData) {
+            $sliderId = $sliderModel->insert($sliderData['slider'], true);
+
+            foreach ($sliderData['variants'] as $variant) {
+                $variantModel->insert([
+                    'slider_id' => $sliderId,
+                    'lang_id' => $variant['lang_id'],
+                    'title' => $variant['title'],
+                    'details' => $variant['details'],
+                    'links' => $variant['links'],
+                ]);
+            }
         }
     }
 }

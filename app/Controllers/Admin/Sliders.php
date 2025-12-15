@@ -5,18 +5,26 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\LanguageModel;
 use App\Models\SliderModel;
+use App\Models\SliderVariantModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Sliders extends BaseController
 {
     protected SliderModel $sliderModel;
     protected LanguageModel $languageModel;
+    protected SliderVariantModel $sliderVariantModel;
+    protected array $languages = [];
+    protected array $languageMap = [];
 
     public function __construct()
     {
         helper(['form', 'url']);
         $this->sliderModel = new SliderModel();
         $this->languageModel = new LanguageModel();
+        $this->sliderVariantModel = new SliderVariantModel();
+
+        $this->languages = $this->languageModel->orderBy('name', 'ASC')->findAll();
+        $this->languageMap = array_column($this->languages, null, 'id');
     }
 
     public function editPage()
@@ -24,8 +32,8 @@ class Sliders extends BaseController
         $data = [
             'title' => 'Slider Yönetimi',
             'pageTitle' => 'Slider Yönetimi',
-            'sliders' => $this->getSlidersWithLanguage(),
-            'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
+            'sliders' => $this->getSlidersWithVariants(),
+            'languages' => $this->languages,
         ];
 
         return view('admin/template/header', $data)
@@ -53,11 +61,30 @@ class Sliders extends BaseController
 
     public function store(): ResponseInterface
     {
+        if (empty($this->languages)) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
+                ->setJSON([
+                    'success' => false,
+                    'errors' => [
+                        'languages' => 'Dil tanımı olmadan slider eklenemez.',
+                    ],
+                ]);
+        }
+
         if (!$this->validate($this->validationRules())) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
                 ->setJSON([
                     'success' => false,
                     'errors' => $this->validator?->getErrors(),
+                ]);
+        }
+
+        [$variantsPayload, $variantErrors] = $this->prepareVariantsPayload();
+        if (!empty($variantErrors)) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
+                ->setJSON([
+                    'success' => false,
+                    'errors' => $variantErrors,
                 ]);
         }
 
@@ -85,7 +112,8 @@ class Sliders extends BaseController
             $payload['slider_order'] = $this->getNextOrder();
         }
 
-        $id = $this->sliderModel->insert($payload);
+        $id = $this->sliderModel->insert($payload, true);
+        $this->syncVariants($id, $variantsPayload);
 
         $slider = $this->findSlider($id);
 
@@ -117,6 +145,15 @@ class Sliders extends BaseController
                 ]);
         }
 
+        [$variantsPayload, $variantErrors] = $this->prepareVariantsPayload();
+        if (!empty($variantErrors)) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY)
+                ->setJSON([
+                    'success' => false,
+                    'errors' => $variantErrors,
+                ]);
+        }
+
         $imageFile = $this->request->getFile('image');
         $imagePath = $slider['image'];
         $removeImageRequest = $this->request->getPost('remove_image') === '1';
@@ -139,6 +176,7 @@ class Sliders extends BaseController
         $payload = $this->buildPayload($imagePath, $removeImageRequest);
 
         $this->sliderModel->update($id, $payload);
+        $this->syncVariants($id, $variantsPayload);
 
         $updatedSlider = $this->findSlider($id);
 
@@ -162,6 +200,7 @@ class Sliders extends BaseController
         }
 
         $this->sliderModel->delete($id);
+        $this->sliderVariantModel->where('slider_id', $id)->delete();
 
         if (!empty($slider['image'])) {
             $this->deleteImageFile($slider['image']);
@@ -176,11 +215,8 @@ class Sliders extends BaseController
     private function validationRules(bool $isCreate = true): array
     {
         $rules = [
-            'title' => 'required|min_length[3]|max_length[255]',
-            'details' => 'permit_empty|string',
-            'links' => 'permit_empty|max_length[255]',
-            'lang_id' => 'required|is_not_unique[languages.id]',
             'active' => 'permit_empty|in_list[0,1]',
+            'slider_order' => 'permit_empty|integer',
         ];
 
         if ($isCreate) {
@@ -223,10 +259,6 @@ class Sliders extends BaseController
         $activeInput = $this->request->getPost('active');
 
         $payload = [
-            'title' => $this->request->getPost('title'),
-            'details' => $this->request->getPost('details'),
-            'links' => $this->request->getPost('links'),
-            'lang_id' => (int) $this->request->getPost('lang_id'),
             'active' => ($activeInput === '1' || $activeInput === 'on') ? 1 : 0,
         ];
 
@@ -246,20 +278,44 @@ class Sliders extends BaseController
 
     private function findSlider(int $id): ?array
     {
-        return $this->sliderModel
-            ->select('sliders.*, languages.name as language_name')
-            ->join('languages', 'languages.id = sliders.lang_id', 'left')
-            ->find($id);
+        $slider = $this->sliderModel->find($id);
+
+        return $this->formatSlider($slider);
     }
 
-    private function getSlidersWithLanguage(): array
+    private function getSlidersWithVariants(): array
     {
-        return $this->sliderModel
-            ->select('sliders.*, languages.name as language_name')
-            ->join('languages', 'languages.id = sliders.lang_id', 'left')
-            ->orderBy('sliders.slider_order', 'ASC')
-            ->orderBy('sliders.id', 'DESC')
+        $sliders = $this->sliderModel
+            ->orderBy('slider_order', 'ASC')
+            ->orderBy('id', 'DESC')
             ->findAll();
+
+        if (empty($sliders)) {
+            return [];
+        }
+
+        $sliderIds = array_column($sliders, 'id');
+
+        $variants = $this->sliderVariantModel
+            ->select('slider_variants.*, languages.name as language_name')
+            ->join('languages', 'languages.id = slider_variants.lang_id', 'left')
+            ->whereIn('slider_variants.slider_id', $sliderIds)
+            ->orderBy('languages.name', 'ASC')
+            ->findAll();
+
+        $grouped = [];
+        foreach ($variants as $variant) {
+            $grouped[$variant['slider_id']][] = $variant;
+        }
+
+        foreach ($sliders as &$slider) {
+            $slider['variants'] = $grouped[$slider['id']] ?? [];
+            $slider['primary_variant'] = $slider['variants'][0] ?? null;
+            $slider = $this->formatSlider($slider, false);
+        }
+        unset($slider);
+
+        return $sliders;
     }
 
     private function getNextOrder(): int
@@ -272,12 +328,19 @@ class Sliders extends BaseController
         return ($lastOrder['slider_order'] ?? 0) + 1;
     }
 
-    private function formatSlider(?array $slider): ?array
+    private function formatSlider(?array $slider, bool $includeVariants = true): ?array
     {
         if ($slider === null) {
             return null;
         }
 
+        if ($includeVariants) {
+            $slider['variants'] = $this->getVariantsForSlider((int) $slider['id']);
+        } else {
+            $slider['variants'] = $slider['variants'] ?? [];
+        }
+
+        $slider['primary_variant'] = $slider['primary_variant'] ?? ($slider['variants'][0] ?? null);
         $slider['image_url'] = !empty($slider['image']) ? base_url($slider['image']) : null;
 
         return $slider;
@@ -302,5 +365,115 @@ class Sliders extends BaseController
                 'success' => false,
                 'message' => 'Slayt bulunamadı.',
             ]);
+    }
+
+    private function getVariantsForSlider(int $sliderId): array
+    {
+        return $this->sliderVariantModel
+            ->select('slider_variants.*, languages.name as language_name')
+            ->join('languages', 'languages.id = slider_variants.lang_id', 'left')
+            ->where('slider_variants.slider_id', $sliderId)
+            ->orderBy('languages.name', 'ASC')
+            ->findAll();
+    }
+
+    private function prepareVariantsPayload(): array
+    {
+        $rawVariants = $this->request->getPost('variants');
+        $prepared = [];
+        $errors = [];
+        $hasActiveVariant = false;
+
+        if (!is_array($rawVariants)) {
+            return [[], ['variants' => 'En az bir dil için içerik girmeniz gerekiyor.']];
+        }
+
+        foreach ($rawVariants as $langId => $fields) {
+            $langId = (int) $langId;
+            $rawVariantId = $fields['id'] ?? null;
+            $variantId = null;
+
+            if ($rawVariantId !== null && $rawVariantId !== '' && (int) $rawVariantId > 0) {
+                $variantId = (int) $rawVariantId;
+            }
+
+            $title = trim((string) ($fields['title'] ?? ''));
+            $details = (string) ($fields['details'] ?? '');
+            $links = trim((string) ($fields['links'] ?? ''));
+
+            $isEmpty = $title === '' && trim($details) === '' && $links === '';
+
+            if ($variantId === null && $isEmpty) {
+                continue;
+            }
+
+            if (!$this->languageExists($langId)) {
+                $errors["variants.$langId.lang_id"] = 'Geçersiz dil seçildi.';
+                continue;
+            }
+
+            if ($isEmpty && $variantId !== null) {
+                $prepared[] = [
+                    'id' => $variantId,
+                    'lang_id' => $langId,
+                    'delete' => true,
+                ];
+                continue;
+            }
+
+            if ($title === '') {
+                $errors["variants.$langId.title"] = 'Başlık zorunludur.';
+                continue;
+            }
+
+            $hasActiveVariant = true;
+
+            $prepared[] = [
+                'id' => $variantId,
+                'lang_id' => $langId,
+                'title' => $title,
+                'details' => $details,
+                'links' => $links !== '' ? $links : null,
+            ];
+        }
+
+        if (!$hasActiveVariant) {
+            $errors['variants'] = 'En az bir dil için içerik girmeniz gerekiyor.';
+        }
+
+        return [$prepared, $errors];
+    }
+
+    private function languageExists(int $langId): bool
+    {
+        return isset($this->languageMap[$langId]);
+    }
+
+    private function syncVariants(int $sliderId, array $variants): void
+    {
+        foreach ($variants as $variant) {
+            $variantId = $variant['id'] ?? null;
+            $shouldDelete = !empty($variant['delete']);
+
+            if ($shouldDelete && $variantId !== null) {
+                $this->sliderVariantModel->delete($variantId);
+                continue;
+            }
+
+            $data = [
+                'lang_id' => $variant['lang_id'],
+                'title' => $variant['title'],
+                'details' => $variant['details'],
+                'links' => $variant['links'],
+            ];
+
+            if ($variantId !== null) {
+                $this->sliderVariantModel->update($variantId, $data);
+                continue;
+            }
+
+            $data['slider_id'] = $sliderId;
+            $this->sliderVariantModel->insert($data);
+        }
     }
 }

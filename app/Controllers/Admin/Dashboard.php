@@ -5,11 +5,13 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\LanguageModel;
 use App\Models\SliderModel;
+use App\Models\SliderVariantModel;
 
 class Dashboard extends BaseController
 {
     protected SliderModel $sliderModel;
     protected LanguageModel $languageModel;
+    protected SliderVariantModel $sliderVariantModel;
 
     public function __construct()
     {
@@ -17,6 +19,7 @@ class Dashboard extends BaseController
         helper(['auth']);
         $this->sliderModel = new SliderModel();
         $this->languageModel = new LanguageModel();
+        $this->sliderVariantModel = new SliderVariantModel();
     }
 
     public function index()
@@ -81,11 +84,36 @@ class Dashboard extends BaseController
 
     private function getSliders(): array
     {
-        return $this->sliderModel
-            ->select('sliders.*, languages.name as language_name')
-            ->join('languages', 'languages.id = sliders.lang_id', 'left')
-            ->orderBy('sliders.id', 'DESC')
+        $sliders = $this->sliderModel
+            ->orderBy('slider_order', 'ASC')
+            ->orderBy('id', 'DESC')
             ->findAll();
+
+        if (empty($sliders)) {
+            return [];
+        }
+
+        $sliderIds = array_column($sliders, 'id');
+        $variants = $this->sliderVariantModel
+            ->select('slider_variants.*, languages.name as language_name')
+            ->join('languages', 'languages.id = slider_variants.lang_id', 'left')
+            ->whereIn('slider_variants.slider_id', $sliderIds)
+            ->orderBy('languages.name', 'ASC')
+            ->findAll();
+
+        $grouped = [];
+        foreach ($variants as $variant) {
+            $grouped[$variant['slider_id']][] = $variant;
+        }
+
+        foreach ($sliders as &$slider) {
+            $slider['variants'] = $grouped[$slider['id']] ?? [];
+            $slider['primary_variant'] = $slider['variants'][0] ?? null;
+            $slider['image_url'] = !empty($slider['image']) ? base_url($slider['image']) : null;
+        }
+        unset($slider);
+
+        return $sliders;
     }
 
     public function logout()
