@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6 md:3/5 lg:w-4/5 xl:w-2/5">
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between px-6 py-5 border-b border-gray-200">
       <div>
@@ -8,7 +8,7 @@
       <button type="button" onclick="openLanguageModal()"
         class="px-5 py-2 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition flex items-center justify-center gap-2">
         <i class="fas fa-plus-circle"></i>
-        <span>Yeni Dil</span>
+        <span>Yeni</span>
       </button>
     </div>
 
@@ -17,7 +17,7 @@
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dil Adı</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -28,7 +28,7 @@
               <?= esc($language['name']) ?>
             </td>
             <td class="px-6 py-4">
-              <div class="flex items-center space-x-2">
+              <div class="flex justify-end space-x-2">
                 <button onclick="openLanguageModal(<?= $language['id'] ?>)" class="text-blue-600 hover:text-blue-800"
                   title="Düzenle">
                   <i class="fas fa-edit"></i>
