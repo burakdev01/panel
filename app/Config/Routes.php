@@ -25,6 +25,11 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('posts/(:num)', 'Admin\Posts::show/$1');
     $routes->post('posts/(:num)', 'Admin\Posts::update/$1');
     $routes->delete('posts/(:num)', 'Admin\Posts::delete/$1');
+    $routes->get('yorum', 'Admin\Comments::index');
+    $routes->post('comments', 'Admin\Comments::store');
+    $routes->get('comments/(:num)', 'Admin\Comments::show/$1');
+    $routes->post('comments/(:num)', 'Admin\Comments::update/$1');
+    $routes->delete('comments/(:num)', 'Admin\Comments::delete/$1');
     $routes->get('dil', 'Admin\Languages::index');
     $routes->post('languages', 'Admin\Languages::store');
     $routes->get('languages/(:num)', 'Admin\Languages::show/$1');

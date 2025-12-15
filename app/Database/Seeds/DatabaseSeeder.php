@@ -12,5 +12,6 @@ class DatabaseSeeder extends Seeder
         $this->call('AdminsSeeder');
         $this->call('SlidersSeeder');
         $this->call('PostsSeeder');
+        $this->call('PostCommentsSeeder');
     }
 }

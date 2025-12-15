@@ -119,6 +119,13 @@
           <span class="font-medium">Blog Yönetimi</span>
         </a>
 
+        <?php $commentActive = $isPath('admin/yorum'); ?>
+        <a href="<?= base_url('admin/yorum') ?>"
+          class="<?= $navBaseClass . ' ' . ($commentActive ? $activeClass : $inactiveClass) ?>">
+          <i class="fas fa-comments w-5"></i>
+          <span class="font-medium">Yorum Yönetimi</span>
+        </a>
+
         <?php $languagesActive = $isAnyPath(['admin/dil', 'admin/languages']); ?>
         <a href="<?= base_url('admin/dil') ?>"
           class="<?= $navBaseClass . ' ' . ($languagesActive ? $activeClass : $inactiveClass) ?>">

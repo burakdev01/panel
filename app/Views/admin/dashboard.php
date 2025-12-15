@@ -50,7 +50,6 @@
         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
           <i class="fas fa-comment text-green-600 text-xl"></i>
         </div>
-        <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded">+23%</span>
       </div>
       <h3 class="text-2xl font-bold text-gray-800 mb-1"><?= $stats['yorum'] ?? 0 ?></h3>
       <p class="text-gray-600 text-sm">Toplam Yorum</p>
@@ -160,7 +159,8 @@
                   alt="<?= esc($primaryVariant['title'] ?? 'Dil içeriği bulunmuyor') ?>"
                   class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                 <div>
-                  <div class="text-sm font-medium text-gray-900"><?= esc($primaryVariant['title'] ?? 'Dil içeriği bulunmuyor') ?>
+                  <div class="text-sm font-medium text-gray-900">
+                    <?= esc($primaryVariant['title'] ?? 'Dil içeriği bulunmuyor') ?>
                   </div>
                   <div class="text-xs text-gray-500 mt-1 truncate max-w-xs">
                     <?= esc($primaryVariant['details'] ?? 'Bu slider için içerik eklenmemiş') ?>
