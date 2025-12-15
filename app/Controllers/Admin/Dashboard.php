@@ -40,7 +40,6 @@ class Dashboard extends BaseController
             'title' => 'Dashboard',
             'pageTitle' => 'Dashboard',
             'stats' => $this->getStats(),
-            'recentActivities' => $this->getRecentActivities(),
             'sliders' => $this->getSliders(),
             'languages' => $this->languageModel->orderBy('name', 'ASC')->findAll(),
         ];
@@ -57,34 +56,6 @@ class Dashboard extends BaseController
             'hizmet' => 0,
             'blog' => $this->postModel->countAllResults(),
             'yorum' => $this->commentModel->countAllResults(),
-        ];
-    }
-
-    private function getRecentActivities()
-    {
-        // Son aktiviteleri getir
-        // Örnek veriler:
-        return [
-            [
-                'icon' => 'plus',
-                'message' => 'Yeni blog yazısı eklendi: "Web Tasarım Trendleri"',
-                'time' => '5 dakika önce'
-            ],
-            [
-                'icon' => 'edit',
-                'message' => 'Slayt güncellendi: "Ana Sayfa Banner"',
-                'time' => '1 saat önce'
-            ],
-            [
-                'icon' => 'comment',
-                'message' => 'Yeni yorum onay bekliyor',
-                'time' => '2 saat önce'
-            ],
-            [
-                'icon' => 'image',
-                'message' => '3 yeni fotoğraf eklendi',
-                'time' => '3 saat önce'
-            ]
         ];
     }
 

@@ -56,37 +56,7 @@
     </div>
   </div>
 
-  <!-- Two Column Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
-    <!-- Recent Activity -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-800">Son Aktiviteler</h3>
-      </div>
-      <div class="p-6">
-        <div class="space-y-4">
-          <?php if(isset($recentActivities) && !empty($recentActivities)): ?>
-          <?php foreach($recentActivities as $activity): ?>
-          <div class="flex items-start space-x-3">
-            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <i class="fas fa-<?= $activity['icon'] ?? 'info' ?> text-blue-600"></i>
-            </div>
-            <div class="flex-1">
-              <p class="text-sm text-gray-800"><?= $activity['message'] ?></p>
-              <p class="text-xs text-gray-500 mt-1"><?= $activity['time'] ?></p>
-            </div>
-          </div>
-          <?php endforeach; ?>
-          <?php else: ?>
-          <div class="text-center py-8">
-            <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
-            <p class="text-gray-500">Henüz aktivite bulunmuyor</p>
-          </div>
-          <?php endif; ?>
-        </div>
-      </div>
-    </div>
-
+  <div class="mb-6">
     <!-- Quick Actions -->
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200">
