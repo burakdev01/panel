@@ -4,6 +4,8 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\LanguageModel;
+use App\Models\PostCommentModel;
+use App\Models\PostModel;
 use App\Models\SliderModel;
 use App\Models\SliderVariantModel;
 
@@ -12,6 +14,8 @@ class Dashboard extends BaseController
     protected SliderModel $sliderModel;
     protected LanguageModel $languageModel;
     protected SliderVariantModel $sliderVariantModel;
+    protected PostModel $postModel;
+    protected PostCommentModel $commentModel;
 
     public function __construct()
     {
@@ -20,6 +24,8 @@ class Dashboard extends BaseController
         $this->sliderModel = new SliderModel();
         $this->languageModel = new LanguageModel();
         $this->sliderVariantModel = new SliderVariantModel();
+        $this->postModel = new PostModel();
+        $this->commentModel = new PostCommentModel();
     }
 
     public function index()
@@ -49,8 +55,8 @@ class Dashboard extends BaseController
         return [
             'slayt' => $this->sliderModel->countAllResults(),
             'hizmet' => 0,
-            'blog' => 0,
-            'yorum' => 0,
+            'blog' => $this->postModel->countAllResults(),
+            'yorum' => $this->commentModel->countAllResults(),
         ];
     }
 
