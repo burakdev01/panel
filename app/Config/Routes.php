@@ -14,8 +14,8 @@ $routes->get('admin/logout', 'Admin\Auth::logout');
 
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('dashboard', 'Admin\Dashboard::index');
-    $routes->get('slayt', 'Admin\Sliders::editPage');
-    $routes->get('slayt/edit', 'Admin\Sliders::editPage');
+    $routes->get('slider', 'Admin\Sliders::editPage');
+    $routes->get('slider/edit', 'Admin\Sliders::editPage');
     $routes->post('sliders', 'Admin\Sliders::store');
     $routes->get('sliders/(:num)', 'Admin\Sliders::show/$1');
     $routes->post('sliders/(:num)', 'Admin\Sliders::update/$1');
@@ -25,12 +25,12 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('posts/(:num)', 'Admin\Posts::show/$1');
     $routes->post('posts/(:num)', 'Admin\Posts::update/$1');
     $routes->delete('posts/(:num)', 'Admin\Posts::delete/$1');
-    $routes->get('yorum', 'Admin\Comments::index');
+    $routes->get('comment', 'Admin\Comments::index');
     $routes->post('comments', 'Admin\Comments::store');
     $routes->get('comments/(:num)', 'Admin\Comments::show/$1');
     $routes->post('comments/(:num)', 'Admin\Comments::update/$1');
     $routes->delete('comments/(:num)', 'Admin\Comments::delete/$1');
-    $routes->get('dil', 'Admin\Languages::index');
+    $routes->get('language', 'Admin\Languages::index');
     $routes->post('languages', 'Admin\Languages::store');
     $routes->get('languages/(:num)', 'Admin\Languages::show/$1');
     $routes->post('languages/(:num)', 'Admin\Languages::update/$1');

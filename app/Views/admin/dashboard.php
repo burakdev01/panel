@@ -64,13 +64,13 @@
       </div>
       <div class="p-6">
         <div class="grid grid-cols-2 gap-4">
-          <a href="<?= base_url('admin/slayt') ?>"
+          <a href="<?= base_url('admin/slider') ?>"
             class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition group">
             <i class="fas fa-plus-circle text-3xl text-gray-400 group-hover:text-blue-500 mb-2"></i>
             <span class="text-sm font-medium text-gray-700 group-hover:text-blue-600">Yeni Slayt</span>
           </a>
 
-          <a href="<?= base_url('admin/hizmet/create') ?>"
+          <a href="<?= base_url('admin/service/create') ?>"
             class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition group">
             <i class="fas fa-plus-circle text-3xl text-gray-400 group-hover:text-purple-500 mb-2"></i>
             <span class="text-sm font-medium text-gray-700 group-hover:text-purple-600">Yeni Hizmet</span>
@@ -82,7 +82,7 @@
             <span class="text-sm font-medium text-gray-700 group-hover:text-orange-600">Yeni Blog</span>
           </a>
 
-          <a href="<?= base_url('admin/fotograf/create') ?>"
+          <a href="<?= base_url('admin/photo/create') ?>"
             class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition group">
             <i class="fas fa-plus-circle text-3xl text-gray-400 group-hover:text-green-500 mb-2"></i>
             <span class="text-sm font-medium text-gray-700 group-hover:text-green-600">Yeni Fotoğraf</span>

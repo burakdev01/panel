@@ -67,8 +67,8 @@
           <span class="font-medium">Ana Sayfa</span>
         </a>
 
-        <?php $sliderActive = $isPath('admin/slayt'); ?>
-        <a href="<?= base_url('admin/slayt') ?>"
+        <?php $sliderActive = $isPath('admin/slider'); ?>
+        <a href="<?= base_url('admin/slider') ?>"
           class="<?= $navBaseClass . ' ' . ($sliderActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-image w-5"></i>
           <span class="font-medium">Slider Yönetimi</span>
@@ -76,8 +76,8 @@
 
         <!-- Hizmet Yönetimi - Dropdown -->
         <?php
-          $serviceCategoryActive = $isPath('admin/hizmet/kategori');
-          $serviceListActive = $currentPath === 'admin/hizmet';
+          $serviceCategoryActive = $isPath('admin/service/category');
+          $serviceListActive = $currentPath === 'admin/service';
           $serviceActive = $serviceCategoryActive || $serviceListActive;
         ?>
         <div class="mb-1">
@@ -91,9 +91,9 @@
               id="hizmet-icon"></i>
           </button>
           <div id="hizmet-menu" class="<?= $serviceActive ? '' : 'hidden ' ?>pl-12 mt-1 space-y-1">
-            <a href="<?= base_url('admin/hizmet/kategori') ?>"
+            <a href="<?= base_url('admin/service/category') ?>"
               class="block px-4 py-2 text-sm rounded <?= $serviceCategoryActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Kategoriler</a>
-            <a href="<?= base_url('admin/hizmet') ?>"
+            <a href="<?= base_url('admin/service') ?>"
               class="block px-4 py-2 text-sm rounded <?= $serviceListActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Hizmetler</a>
           </div>
         </div>
@@ -105,8 +105,8 @@
           <span class="font-medium">Video Yönetimi</span>
         </a>
 
-        <?php $photoActive = $isPath('admin/fotograf'); ?>
-        <a href="<?= base_url('admin/fotograf') ?>"
+        <?php $photoActive = $isPath('admin/photo'); ?>
+        <a href="<?= base_url('admin/photo') ?>"
           class="<?= $navBaseClass . ' ' . ($photoActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-camera w-5"></i>
           <span class="font-medium">Fotoğraf Yönetimi</span>
@@ -119,15 +119,15 @@
           <span class="font-medium">Blog Yönetimi</span>
         </a>
 
-        <?php $commentActive = $isPath('admin/yorum'); ?>
-        <a href="<?= base_url('admin/yorum') ?>"
+        <?php $commentActive = $isPath('admin/comment'); ?>
+        <a href="<?= base_url('admin/comment') ?>"
           class="<?= $navBaseClass . ' ' . ($commentActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-comments w-5"></i>
           <span class="font-medium">Yorum Yönetimi</span>
         </a>
 
-        <?php $languagesActive = $isAnyPath(['admin/dil', 'admin/languages']); ?>
-        <a href="<?= base_url('admin/dil') ?>"
+        <?php $languagesActive = $isAnyPath(['admin/language', 'admin/languages']); ?>
+        <a href="<?= base_url('admin/language') ?>"
           class="<?= $navBaseClass . ' ' . ($languagesActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-language w-5"></i>
           <span class="font-medium">Dil Yönetimi</span>
@@ -140,8 +140,8 @@
           <span class="font-medium">Site Ayarları</span>
         </a>
 
-        <?php $faqActive = $isPath('admin/sss'); ?>
-        <a href="<?= base_url('admin/sss') ?>"
+        <?php $faqActive = $isPath('admin/faq'); ?>
+        <a href="<?= base_url('admin/faq') ?>"
           class="<?= $navBaseClass . ' ' . ($faqActive ? $activeClass : $inactiveClass) ?>">
           <i class="fas fa-question-circle w-5"></i>
           <span class="font-medium">SSS Yönetimi</span>
@@ -181,7 +181,7 @@
           <i class="fas fa-home w-5"></i>
           <span class="font-medium">Ana Sayfa</span>
         </a>
-        <a href="<?= base_url('admin/slayt') ?>"
+        <a href="<?= base_url('admin/slider') ?>"
           class="<?= $mobileBaseClass . ' ' . ($sliderActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-image w-5"></i>
           <span class="font-medium">Slider Yönetimi</span>
@@ -197,14 +197,14 @@
               id="hizmet-mobile-icon"></i>
           </button>
           <div id="hizmet-mobile-menu" class="<?= $serviceActive ? '' : 'hidden ' ?>pl-12 mt-1 space-y-1">
-            <a href="<?= base_url('admin/hizmet/kategori') ?>"
+            <a href="<?= base_url('admin/service/category') ?>"
               class="block px-4 py-2 text-sm rounded <?= $serviceCategoryActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Kategoriler</a>
-            <a href="<?= base_url('admin/hizmet') ?>"
+            <a href="<?= base_url('admin/service') ?>"
               class="block px-4 py-2 text-sm rounded <?= $serviceListActive ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-gray-600 hover:bg-gray-100' ?>">Hizmetler</a>
           </div>
         </div>
-        <?php $commentActive = $isPath('admin/yorum'); ?>
-        <a href="<?= base_url('admin/yorum') ?>"
+        <?php $commentActive = $isPath('admin/comment'); ?>
+        <a href="<?= base_url('admin/comment') ?>"
           class="<?= $mobileBaseClass . ' ' . ($commentActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-comment w-5"></i>
           <span class="font-medium">Yorum Yönetimi</span>
@@ -214,7 +214,7 @@
           <i class="fas fa-video w-5"></i>
           <span class="font-medium">Video Yönetimi</span>
         </a>
-        <a href="<?= base_url('admin/fotograf') ?>"
+        <a href="<?= base_url('admin/photo') ?>"
           class="<?= $mobileBaseClass . ' ' . ($photoActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-camera w-5"></i>
           <span class="font-medium">Fotoğraf Yönetimi</span>
@@ -224,7 +224,7 @@
           <i class="fas fa-blog w-5"></i>
           <span class="font-medium">Blog Yönetimi</span>
         </a>
-        <a href="<?= base_url('admin/dil') ?>"
+        <a href="<?= base_url('admin/language') ?>"
           class="<?= $mobileBaseClass . ' ' . ($languagesActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-language w-5"></i>
           <span class="font-medium">Dil Yönetimi</span>
@@ -234,7 +234,7 @@
           <i class="fas fa-sliders-h w-5"></i>
           <span class="font-medium">Site Ayarları</span>
         </a>
-        <a href="<?= base_url('admin/sss') ?>"
+        <a href="<?= base_url('admin/faq') ?>"
           class="<?= $mobileBaseClass . ' ' . ($faqActive ? $mobileActiveClass : $mobileInactiveClass) ?>">
           <i class="fas fa-question-circle w-5"></i>
           <span class="font-medium">SSS Yönetimi</span>
