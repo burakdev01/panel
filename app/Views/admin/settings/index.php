@@ -24,7 +24,7 @@
       <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h2 class="text-lg font-semibold text-gray-800">Dil Bazlı İçerik</h2>
+            <h2 class="text-lg font-semibold text-gray-800">Dil Bazlı Ayarlar</h2>
             <p class="text-sm text-gray-500">SEO ve footer tanıtım metinleri</p>
           </div>
           <select id="settingsLanguageSelect"
@@ -66,7 +66,7 @@
               class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
           </div>
           <button onclick="saveLanguageSettings()"
-            class="w-full px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition">Seçili
+            class="w-full px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition">Seçili
             Dili Kaydet</button>
         </div>
       </div>
